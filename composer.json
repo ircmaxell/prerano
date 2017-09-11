@@ -1,0 +1,25 @@
+{
+    "name": "ircmaxell/prerano",
+    "description": "A new language built on PHP",
+    "license": "Apache2",
+    "authors": [
+        {
+            "name": "Anthony Ferrara",
+            "email": "ircmaxell@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Prerano\\": "lib/"
+        }
+    },
+    "require": {
+        "php": ">=7.0",
+        "doctrine/lexer": ">=1.0",
+        "nikic/php-parser": ">=3.0",
+        "cilex/cilex": ">=1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=6.3"
+    }
+}
