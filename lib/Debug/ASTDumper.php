@@ -3,10 +3,17 @@
 namespace Prerano\Debug;
 
 use Prerano\AST\Node;
+use Prerano\AST\Node\Stmt\Package;
 
 class ASTDumper
 {
-    public static function dump(array $nodes, string $indent = '')
+    public static function dump(Package $package)
+    {
+        echo "Package " . $package->name->toString() . "\n";
+        self::dumpNodes($package->stmts, '  ');
+    }
+
+    public static function dumpNodes(array $nodes, string $indent = '')
     {
         foreach ($nodes as $node) {
             if ($node instanceof $node) {
@@ -25,7 +32,7 @@ class ASTDumper
             $subNodes = $node->$name;
             if (is_array($subNodes)) {
                 echo $indent . $name . " [\n";
-                self::dump($subNodes, $indent . '  ');
+                self::dumpNodes($subNodes, $indent . '  ');
                 echo $indent . "]\n";
             } elseif ($subNodes instanceof Node) {
                 echo $indent . $name . ":\n";

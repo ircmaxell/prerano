@@ -7,13 +7,11 @@ namespace Prerano\Parser;
 final class Tokens
 {
     const YYERRTOK = 256;
-    const T_IF = 257;
-    const then = 258;
-    const T_ELSE = 259;
-    const T_DOUBLE_ARROW = 260;
-    const T_COALSECE = 261;
-    const T_NAMESPACE = 262;
-    const T_STRING = 263;
-    const T_LNUMBER = 264;
-    const T_DNUMBER = 265;
+    const T_TYPE = 257;
+    const T_PACKAGE = 258;
+    const T_STRING = 259;
+    const T_PROTECTED = 260;
+    const T_PUBLIC = 261;
+    const T_LNUMBER = 262;
+    const T_DNUMBER = 263;
 }

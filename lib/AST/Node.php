@@ -4,6 +4,7 @@ namespace Prerano\AST;
 
 interface Node
 {
+    
     /**
      * Gets the type of the node.
      *

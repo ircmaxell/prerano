@@ -4,6 +4,7 @@ namespace Prerano\Parser;
 
 use Prerano\Parser\ParserAbstract;
 use Prerano\Parser\Error;
+use Prerano\Language;
 use Prerano\AST\Node;
 use Prerano\AST\Node\Expr;
 use Prerano\AST\Node\Name;
@@ -18,145 +19,159 @@ use Prerano\AST\Node\Stmt;
  */
 class Parser extends ParserAbstract
 {
-    protected $tokenToSymbolMapSize = 266;
-    protected $actionTableSize = 26;
+    protected $tokenToSymbolMapSize = 264;
+    protected $actionTableSize = 35;
     protected $gotoTableSize = 6;
 
-    protected $invalidSymbol = 16;
+    protected $invalidSymbol = 21;
     protected $errorSymbol = 1;
     protected $defaultAction = -32766;
     protected $unexpectedTokenRule = 32767;
 
-    protected $YY2TBLSTATE  = 3;
-    protected $YYNLSTATES   = 19;
+    protected $YY2TBLSTATE  = 11;
+    protected $YYNLSTATES   = 26;
 
     protected $symbolToName = array(
         "EOF",
         "error",
-        "T_IF",
-        "T_ELSE",
-        "T_NAMESPACE",
+        "T_TYPE",
+        "'|'",
+        "'&'",
+        "'('",
+        "')'",
+        "'*'",
+        "'?'",
+        "'<'",
+        "'>'",
+        "T_PACKAGE",
         "T_STRING",
+        "T_PROTECTED",
+        "T_PUBLIC",
         "T_LNUMBER",
         "T_DNUMBER",
         "';'",
         "'\\\\'",
-        "'('",
-        "')'",
-        "'{'",
-        "'}'",
         "'='",
-        "'$'"
+        "','"
     );
 
     protected $tokenToSymbol = array(
-            0,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   15,   16,   16,   16,
-           10,   11,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,    8,
-           16,   14,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,    9,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   12,   16,   13,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   16,   16,   16,   16,    1,    2,   16,    3,
-           16,   16,    4,    5,    6,    7
+            0,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,    4,   21,
+            5,    6,    7,   21,   20,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   17,
+            9,   19,   10,    8,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   18,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,    3,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,   21,   21,   21,   21,
+           21,   21,   21,   21,   21,   21,    1,    2,   11,   12,
+           13,   14,   15,   16
     );
 
     protected $action = array(
-            3,    0,   26,    8,   38,   39,    7,   31,    4,   40,
-           18,   27,    0,   11,   17,   32,   23,    0,    0,    0,
-           33,    0,    0,   34,    0,    6
+            3,    4,    5,   35,   44,    0,   45,   46,    1,   14,
+           37,   38,   36,   34,    4,    5,   52,   53,   47,   25,
+           15,   33,   31,    0,   32,    2,    0,    0,    0,    0,
+            0,   20,    0,    0,    6
     );
 
     protected $actionCheck = array(
-            2,    0,    5,    4,    6,    7,    3,    8,   10,    5,
-           12,    5,   -1,   15,    9,    8,    8,   -1,   -1,   -1,
-           11,   -1,   -1,   13,   -1,   14
+            5,    3,    4,    2,    6,    0,    7,    8,    9,    2,
+           15,   16,   11,   12,    3,    4,   13,   14,   10,   17,
+           11,   17,   12,   -1,   12,   19,   -1,   -1,   -1,   -1,
+           -1,   18,   -1,   -1,   20
     );
 
     protected $actionBase = array(
-            0,   -1,   10,   -2,   -2,   -2,   -2,   -2,   -3,    3,
-            1,    4,    7,   11,    8,    5,    9,    6,    0,    0,
-           -2,   -2
+            9,   -5,   -5,   -5,   -5,   -5,   -5,   -2,   11,   11,
+           11,    1,   -1,   -1,    3,   10,    7,    5,    2,   13,
+           12,    4,    6,    8,   14,    0,    0,    1,    1,    1,
+            1,    1,    1,   -1,   -1,   -1,   -1
     );
 
     protected $actionDefault = array(
-            3,    1,32767,32767,32767,32767,32767,32767,32767,   23,
-        32767,32767,32767,   17,32767,    6,32767,32767,   10
+        32767,   23,32767,32767,32767,32767,32767,32767,   13,   25,
+           24,32767,   16,   17,   28,32767,    1,32767,32767,    4,
+        32767,32767,32767,32767,   22,    3
     );
 
     protected $goto = array(
-            5,   16,    9,   37,   41,   28
+            8,    7,   12,   13,   10,   22
     );
 
     protected $gotoCheck = array(
-            9,    9,    9,    9,    9,    8
+           10,   10,   10,   10,   10,    7
     );
 
     protected $gotoBase = array(
-            0,    0,    0,    0,    0,    0,    0,    0,    3,   -3,
-            0,    0
+            0,    0,    0,    0,    0,    0,    0,   -6,    0,    0,
+           -2,    0,    0
     );
 
     protected $gotoDefault = array(
-        -32768,   10,    1,   21,   14,   24,   15,    2,   30,   12,
-           35,   13
+        -32768,   17,   18,   16,   28,   19,   21,   40,   41,   11,
+            9,   23,   24
     );
 
     protected $ruleToNonTerminal = array(
-            0,    1,    2,    2,    3,    3,    4,    6,    6,    7,
-            7,    5,    5,    8,    9,    9,    9,    9,    9,    9,
-            9,   11,   10,   10
+            0,    1,    3,    3,    2,    5,    5,    4,    7,    7,
+            7,    8,    8,    6,   10,   10,   10,   10,   10,   10,
+           10,   10,   11,   11,   12,   12,    9,    9,    9
     );
 
     protected $ruleToLength = array(
-            1,    1,    2,    0,    3,    1,    1,    1,    3,    2,
-            0,    1,    1,    2,    3,    3,    4,    1,    3,    1,
-            1,    2,    2,    0
+            1,    4,    2,    0,    1,    1,    3,    2,    1,    1,
+            1,    1,    1,    5,    1,    1,    3,    3,    3,    2,
+            2,    4,    1,    0,    3,    1,    1,    1,    0
     );
 
     protected $productions = array(
         "start : start",
-        "start : top_statement_list",
-        "top_statement_list : top_statement_list top_statement",
+        "start : T_PACKAGE namespace_name ';' top_statement_list",
+        "top_statement_list : top_statement_list statement",
         "top_statement_list : /* empty */",
-        "top_statement : T_NAMESPACE namespace_name ';'",
-        "top_statement : statement",
         "namespace_name : namespace_name_parts",
         "namespace_name_parts : T_STRING",
         "namespace_name_parts : namespace_name_parts '\\\\' T_STRING",
-        "statement_list : statement_list non_empty_statement",
-        "statement_list : /* empty */",
-        "statement : non_empty_statement",
-        "statement : ';'",
-        "non_empty_statement : expr ';'",
-        "expr : '(' expr ')'",
-        "expr : '{' statement_list '}'",
-        "expr : T_IF expr expr else_expr",
-        "expr : variable",
-        "expr : variable '=' expr",
-        "expr : T_LNUMBER",
-        "expr : T_DNUMBER",
-        "variable : '$' T_STRING",
-        "else_expr : T_ELSE expr",
-        "else_expr : /* empty */"
+        "statement : type_decl ';'",
+        "identifier : T_STRING",
+        "identifier : T_TYPE",
+        "identifier : T_PACKAGE",
+        "scalar : T_LNUMBER",
+        "scalar : T_DNUMBER",
+        "type_decl : T_TYPE optional_modifier identifier '=' type_expr",
+        "type_expr : identifier",
+        "type_expr : scalar",
+        "type_expr : type_expr '|' type_expr",
+        "type_expr : type_expr '&' type_expr",
+        "type_expr : '(' type_expr ')'",
+        "type_expr : type_expr '*'",
+        "type_expr : type_expr '?'",
+        "type_expr : type_expr '<' type_expr_list '>'",
+        "type_expr_list : non_empty_type_expr_list",
+        "type_expr_list : /* empty */",
+        "non_empty_type_expr_list : non_empty_type_expr_list ',' type_expr",
+        "non_empty_type_expr_list : type_expr",
+        "optional_modifier : T_PROTECTED",
+        "optional_modifier : T_PUBLIC",
+        "optional_modifier : /* empty */"
     );
 
     protected function reduceRule0()
@@ -166,7 +181,7 @@ class Parser extends ParserAbstract
 
     protected function reduceRule1()
     {
-        $this->semValue = $this->handleNamespaces($this->semStack[$this->stackPos-(1-1)]);
+        $this->semValue = new Node\Stmt\Package($this->semStack[$this->stackPos-(4-2)], $this->semStack[$this->stackPos-(4-4)], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes);
     }
 
     protected function reduceRule2()
@@ -186,111 +201,128 @@ class Parser extends ParserAbstract
 
     protected function reduceRule4()
     {
-        $this->semValue = new Stmt\Namespace_($this->semStack[$this->stackPos-(3-2)], null, $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+        $this->semValue = new Name($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule5()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
-    }
-
-    protected function reduceRule6()
-    {
-        $this->semValue = new Name($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
-    }
-
-    protected function reduceRule7()
-    {
         $this->semValue = array($this->semStack[$this->stackPos-(1-1)]);
     }
 
-    protected function reduceRule8()
+    protected function reduceRule6()
     {
         $this->semStack[$this->stackPos-(3-1)][] = $this->semStack[$this->stackPos-(3-3)];
         $this->semValue = $this->semStack[$this->stackPos-(3-1)];
     }
 
+    protected function reduceRule7()
+    {
+        $this->semValue = $this->semStack[$this->stackPos-(2-1)];
+    }
+
+    protected function reduceRule8()
+    {
+        $this->semValue = new Node\Name($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
+    }
+
     protected function reduceRule9()
     {
-        $this->semStack[$this->stackPos-(2-1)][] = $this->semStack[$this->stackPos-(2-2)];
-        $this->semValue = $this->semStack[$this->stackPos-(2-1)];
+        $this->semValue = new Node\Name($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule10()
     {
-        $this->semValue = array();
+        $this->semValue = new Node\Name($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule11()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
+        $this->semValue = $this->parseLNumber($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule12()
     {
-        $startAttributes = $this->startAttributeStack[$this->stackPos-(1-1)];
-        if (isset($startAttributes['comments'])) {
-            $this->semValue = new Stmt\Nop(['comments' => $startAttributes['comments']]);
-        } else {
-            $this->semValue = null;
-        };
-        if ($this->semValue === null) {
-            $this->semValue = array();
-        } /* means: no statement */
+        $this->semValue = $this->parseDNumber($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule13()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(2-1)];
+        $this->semValue = new Node\Stmt\Type($this->semStack[$this->stackPos-(5-3)], $this->semStack[$this->stackPos-(5-5)], $this->semStack[$this->stackPos-(5-2)], $this->startAttributeStack[$this->stackPos-(5-1)] + $this->endAttributes);
     }
 
     protected function reduceRule14()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(3-2)];
+        $this->semValue = new Node\Expr\Type\Named($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule15()
     {
-        $this->semValue = new Expr\Block($this->semStack[$this->stackPos-(3-2)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Type\Value($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule16()
     {
-        $this->semValue = new Expr\If_($this->semStack[$this->stackPos-(4-2)], $this->semStack[$this->stackPos-(4-3)], $this->semStack[$this->stackPos-(4-4)], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Type\Union($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule17()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
+        $this->semValue = new Node\Expr\Type\Intersection($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule18()
     {
-        $this->semValue = new Expr\Assign($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+        $this->semValue = $this->semStack[$this->stackPos-(3-2)];
     }
 
     protected function reduceRule19()
     {
-        $this->semValue = $this->parseLNumber($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Type\Pointer($this->semStack[$this->stackPos-(2-1)], $this->startAttributeStack[$this->stackPos-(2-1)] + $this->endAttributes);
     }
 
     protected function reduceRule20()
     {
-        $this->semValue = new Scalar\DNumber($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Type\Union($this->semStack[$this->stackPos-(2-1)], new Node\Expr\Type(new Node\Name('null', $this->startAttributeStack[$this->stackPos-(2-1)] + $this->endAttributes), $this->startAttributeStack[$this->stackPos-(2-1)] + $this->endAttributes), $this->startAttributeStack[$this->stackPos-(2-1)] + $this->endAttributes);
     }
 
     protected function reduceRule21()
     {
-        $this->semValue = new Expr\Variable($this->semStack[$this->stackPos-(2-2)], $this->startAttributeStack[$this->stackPos-(2-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Type\Specification($this->semStack[$this->stackPos-(4-1)], $this->semStack[$this->stackPos-(4-3)], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes);
     }
 
     protected function reduceRule22()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(2-2)];
+        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
     }
 
     protected function reduceRule23()
     {
-        $this->semValue = null;
+        $this->semValue = array();
+    }
+
+    protected function reduceRule24()
+    {
+        $this->semStack[$this->stackPos-(3-1)][] = $this->semStack[$this->stackPos-(3-3)];
+        $this->semValue = $this->semStack[$this->stackPos-(3-1)];
+    }
+
+    protected function reduceRule25()
+    {
+        $this->semValue = array($this->semStack[$this->stackPos-(1-1)]);
+    }
+
+    protected function reduceRule26()
+    {
+        $this->semValue = Language\Package::PROTECTED;
+    }
+
+    protected function reduceRule27()
+    {
+        $this->semValue = Language\Package::PUBLIC;
+    }
+
+    protected function reduceRule28()
+    {
+        $this->semValue = Language\Package::PRIVATE;
     }
 }

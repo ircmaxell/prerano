@@ -23,12 +23,26 @@ $b = 2;
 
 $parser = new Prerano\Parser\Parser(new Prerano\Parser\Lexer);
 
+$code = '
+package Foo\Bar;
 
+type foo = string|int;
+type fooptr = foo*;
+type bar = union<string,int>;
 
+';
 
 $ast = $parser->parse($code);
 Prerano\Debug\ASTDumper::dump($ast);
+
 $generator = new Prerano\CFG\Generator;
+$package = $generator->generatePackage($ast);
+Prerano\Debug\CFGDumper::dumpPackage($package);
+
+die();
+
+$ast = $parser->parse($code);
+Prerano\Debug\ASTDumper::dump($ast);
 
 $block = new Prerano\CFG\Block\Simple;
 $generator->generate($ast, $block);

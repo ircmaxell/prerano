@@ -6,9 +6,28 @@ use Prerano\Type;
 use Prerano\CFG\Block;
 use Prerano\CFG\Node;
 use Prerano\CFG\Variable;
+use Prerano\Language\Package;
 
 class CFGDumper
 {
+    public static function dumpPackage(Package $package)
+    {
+        echo "Package: " . $package->name . "\n";
+        echo "  Public:\n";
+        self::dumpPackageFlag($package, Package::PUBLIC);
+        echo "  Protected:\n";
+        self::dumpPackageFlag($package, Package::PROTECTED);
+        echo "  Private:\n";
+        self::dumpPackageFlag($package, Package::PRIVATE);
+    }
+
+    protected static function dumpPackageFlag(Package $package, int $flag)
+    {
+        echo "    Types:\n";
+        foreach ($package->types[$flag] as $name => $type) {
+            echo "      $name => " . $type->toString() . "\n";
+        }
+    }
     public static function dump(array $blocks, array &$seen = [])
     {
         foreach ($blocks as $block) {

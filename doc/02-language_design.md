@@ -334,6 +334,34 @@ When the class contains a single method, it will be compiled as the method name 
 
 Additionally, if the types are different, the return value of the generated method will be based on the union of the types.
 
+### Multiple Inheritance (not sure)
+
+Prerano supports multiple inheritance out of the box. 
+
+    class A {
+        def foo() = "A";
+    }
+    class B {
+        def bar() = "B";
+    }
+    class AB < A,B {
+    }
+
+The One catch is that if a method is defined in more than one parent, you must override the method locally:
+
+    class A {
+        def foo() = "A";
+    }
+    class B {
+        def foo() = "B";
+        def bar() = "B";
+    }
+    class AB < A,B {
+        def foo() = "AB";
+    }
+
+The way this is resolved internally is that `B` is internally copied to `B'` in which `B`'s root parent is compiled to extend A).
+
 ## Control Flow
 
 There are a few built-in control flow systems. All can be used as expressions (meaning they return a value):
@@ -432,6 +460,49 @@ For example:
     }
 
     [1,2].each() fn($el) $el + 1;
+
+## Packages
+
+Everything in Prerano revolves around packages. When Prerano is compiled, it is compiled a package at a time. A package is considered everything inside of a folder (all `*.pr` files in the folder). The file must declare the package it belongs to.
+
+### Interacting with PHP.
+
+PHP uses namespaces. Prerano packages are similar in that public constants/functions/classes are declared using PHP's namespaces.
+
+In addition, a __PRERANO_PACKAGE__ class will be defined in each prerano package compilation result, which houses metadata (used for compiling other packages) and protected/private variables and members.
+
+### "Global" code
+
+Prerano has no concept of global code. All code written inside of a package is run package-local. For example:
+
+    package Foo\Bar;
+    $a = 1;
+
+Would be compiled to PHP as (something like):
+
+    <?php
+    namespace Foo\Bar;
+
+    class __PRERANO_PACKAGE__ {
+        private static $isInitialized = false;
+        private function __construct();
+        public static function boot() {
+            // snip
+            $this->init();
+            // snip
+        }
+        private function init() {
+            // snip
+            $a = 1;
+        }
+    }
+    __PRERANO_PACKAGE__::boot();
+
+### "Global" Variables
+
+Prerano has no concept of global variables either. Attempting to use a super-global from PHP will result in a compiler error.
+
+Instead, to access them, either take arguments, or call functions to get the data.
 
 ## Other
 

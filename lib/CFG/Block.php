@@ -4,6 +4,10 @@ namespace Prerano\CFG;
 
 interface Block
 {
+    const MODE_RO = 0b0001;
+    const MODE_WO = 0b0010;
+    const MODE_RW = 0b0011;
+
     public function getId(): int;
 
     public function addInboundBlock(Block $inbound);
@@ -14,5 +18,7 @@ interface Block
     public function getNodes(): array;
     public function getNextBlocks(): array;
 
-    public function getScope(): Scope;
+    public function write(Variable $variable, Variable $value = null): Variable;
+
+    public function read(string $name): Variable;
 }

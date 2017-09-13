@@ -3,3 +3,6 @@ rebuild:
 
 build: rebuild
 		php-cs-fixer fix ./lib
+
+test:
+		vendor/bin/phpunit --coverage-text

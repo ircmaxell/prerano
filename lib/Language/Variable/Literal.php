@@ -1,13 +1,14 @@
 <?php
 
-namespace Prerano\CFG\Variable;
+namespace Prerano\Language\Variable;
 
-use Prerano\Type;
-use Prerano\CFG\VariableAbstract;
+use Prerano\Language\Type;
+use Prerano\Language\VariableAbstract;
+use RuntimException;
 
-class Scalar extends VariableAbstract
+class Literal extends VariableAbstract
 {
-    public $name;
+    public $value;
 
     public function __construct($value)
     {
@@ -18,6 +19,10 @@ class Scalar extends VariableAbstract
             $type = new Type(Type::FLOAT);
         } elseif (is_string($value)) {
             $type = new Type(Type::STRING);
+        } elseif (is_null($value)) {
+            $type = new Type(Type::NULL);
+        } else {
+            throw new RuntimException("Unknown literal type provided: " . gettype($value));
         }
         parent::__construct($type);
     }

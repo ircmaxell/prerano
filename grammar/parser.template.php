@@ -11,6 +11,7 @@ use Prerano\Parser\{
     ParserAbstract,
     Error
 };
+use Prerano\Language;
 use Prerano\AST\Node;
 use Prerano\AST\Node\{
     Expr,
