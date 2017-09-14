@@ -2,84 +2,101 @@
 
 namespace Prerano\Debug;
 
-use Prerano\Type;
-use Prerano\CFG\Block;
-use Prerano\CFG\Node;
-use Prerano\CFG\Variable;
+use Prerano\Language\Type;
+use Prerano\Language\Block;
+use Prerano\Language\Node;
+use Prerano\Language\Variable;
 use Prerano\Language\Package;
 
 class CFGDumper
 {
-    public static function dumpPackage(Package $package)
+    public static function dumpPackage(Package $package): string
     {
-        echo "Package: " . $package->name . "\n";
-        echo "  Public:\n";
-        self::dumpPackageFlag($package, Package::PUBLIC);
-        echo "  Protected:\n";
-        self::dumpPackageFlag($package, Package::PROTECTED);
-        echo "  Private:\n";
-        self::dumpPackageFlag($package, Package::PRIVATE);
+        $result = "Package: " . $package->name . "\n";
+        $result .= "  Public:\n";
+        $result .= self::dumpPackageFlag($package, Package::PUBLIC);
+        $result .= "  Protected:\n";
+        $result .= self::dumpPackageFlag($package, Package::PROTECTED);
+        $result .= "  Private:\n";
+        $result .= self::dumpPackageFlag($package, Package::PRIVATE);
+        return $result;
     }
 
-    protected static function dumpPackageFlag(Package $package, int $flag)
+    protected static function dumpPackageFlag(Package $package, int $flag): string
     {
-        echo "    Types:\n";
+        $result = "    Types:\n";
         foreach ($package->types[$flag] as $name => $type) {
-            echo "      $name => " . $type->toString() . "\n";
+            $result .= "      $name => " . $type->toString() . "\n";
         }
-    }
-    public static function dump(array $blocks, array &$seen = [])
-    {
-        foreach ($blocks as $block) {
-            self::dumpBlock($block, $seen);
+        $result .= "    Functions:\n";
+        foreach ($package->functions[$flag] as $name => $function) {
+            $result .= "      $name:\n";
+            $result .= "        result: " . self::dumpVariable($function->result) . "\n";
+            $result .= "        blocks: \n";
+            $result .= self::dumpBlock($function->body);
         }
+        return $result;
     }
 
-    public static function dumpBlock(Block $block, array &$seen = [])
+    public static function dumpBlocks(array $blocks, array &$seen = []): string
     {
-        $scope = $block->getScope();
+        $result = '';
+        foreach ($blocks as $block) {
+            $result .= self::dumpBlock($block, $seen);
+        }
+        return $result;
+    }
+
+    public static function dumpBlock(Block $block, array &$seen = []): string
+    {
         $id = $block->getId();
         if (isset($seen[$id])) {
-            return;
+            return '';
         }
         $seen[$id] = true;
-        echo "Block #$id(";
+        $result = "          Block #$id(";
         $sep = '';
-        foreach ($scope->getInput() as $name => $variable) {
-            echo $sep . '$' . $variable->getId() . '<' . $name . ">";
+        foreach ($block->getInput() as $name => $variable) {
+            $result .= $sep . '$' . $variable->getId() . '<' . $name . ">";
             $sep = ', ';
         }
-        echo ")\n";
+        $result .= ")\n";
         foreach ($block->getNodes() as $node) {
-            echo "  " . $node->getName() . ":\n";
+            $result .= "            " . $node->getName() . ":\n";
             foreach ($node->getSubNodeNames() as $name) {
-                if (!$node->$name instanceof Variable) {
-                    throw new \LogicException("Nodes can only have variables as children");
+                $children = [$node->$name];
+                if (is_array($node->$name)) {
+                    $children = $node->$name;
                 }
-                echo "    $name: " . self::dumpVariable($node->$name) . "\n";
+                foreach ($children as $key => $subNode) {
+                    if (!$subNode instanceof Variable) {
+                        throw new \LogicException("Nodes can only have variables as children for node $name: " . $node->getName());
+                    }
+                    $result .= "                $name: " . self::dumpVariable($node->$name) . "\n";
+                }
             }
         }
         foreach ($block->getNextBlocks() as $reason => $new) {
-            echo "  {$reason}->Block #" . $new->getId() . "\n";
+            $result .= "             {$reason}->Block #" . $new->getId() . "\n";
         }
-        echo "\n";
+        $result .= "\n";
 
-        self::dump($block->getNextBlocks(), $seen);
+        return $result . self::dumpBlocks($block->getNextBlocks(), $seen);
     }
 
     public static function dumpVariable($variable): string
     {
         $result = '';
         if ($variable instanceof Variable) {
+            $result = $variable->getDeclaredType()->toString() . ' ';
             $result .= '$' . $variable->getId();
             if ($variable instanceof Variable\Named) {
                 $result .= '<' . $variable->name . '>';
-            } elseif ($variable instanceof Variable\Scalar) {
-                $result .= '=' . $variable->value;
+            } elseif ($variable instanceof Variable\Literal) {
+                $result .= ' = ' . $variable->value;
             } elseif ($variable instanceof Variable\Phi) {
                 $result .= '{' . implode(', ', array_map(self::class . '::dumpVariable', $variable->parents)) . '}';
             }
-            $result .= '@' . self::dumpType($variable->getType());
         } elseif (is_array($variable)) {
             $result .= '[';
             $sep = '';

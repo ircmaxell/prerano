@@ -96,7 +96,7 @@ class Name extends NodeAbstract
      */
     public function toString()
     {
-        return implode('\\', $this->parts);
+        return implode('::', $this->parts);
     }
 
     /**
@@ -107,7 +107,7 @@ class Name extends NodeAbstract
      */
     public function __toString()
     {
-        return implode('\\', $this->parts);
+        return $this->toString();
     }
 
     /**
@@ -195,7 +195,7 @@ class Name extends NodeAbstract
     private static function prepareName($name)
     {
         if (\is_string($name)) {
-            return explode('\\', $name);
+            return explode('::', $name);
         } elseif (\is_array($name)) {
             return $name;
         } elseif ($name instanceof self) {

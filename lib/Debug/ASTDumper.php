@@ -7,39 +7,43 @@ use Prerano\AST\Node\Stmt\Package;
 
 class ASTDumper
 {
-    public static function dump(Package $package)
+    public static function dump(Package $package): string
     {
-        echo "Package " . $package->name->toString() . "\n";
-        self::dumpNodes($package->stmts, '  ');
+        $result = "Package " . $package->name->toString() . "\n";
+        $result .= self::dumpNodes($package->stmts, '  ');
+        return $result;
     }
 
-    public static function dumpNodes(array $nodes, string $indent = '')
+    public static function dumpNodes(array $nodes, string $indent = ''): string
     {
+        $result = '';
         foreach ($nodes as $node) {
             if ($node instanceof $node) {
-                self::dumpNode($node, $indent);
+                $result .= self::dumpNode($node, $indent);
             } else {
-                echo $indent . $node . "\n";
+                $result .= $indent . $node . "\n";
             }
         }
+        return $result;
     }
 
-    public static function dumpNode(Node $node, string $indent)
+    public static function dumpNode(Node $node, string $indent): string
     {
-        echo $indent . $node->getName() . "\n";
+        $result = $indent . $node->getName() . "\n";
         $indent .= "  ";
         foreach ($node->getSubNodeNames() as $name) {
             $subNodes = $node->$name;
             if (is_array($subNodes)) {
-                echo $indent . $name . " [\n";
-                self::dumpNodes($subNodes, $indent . '  ');
-                echo $indent . "]\n";
+                $result .= $indent . $name . " [\n";
+                $result .= self::dumpNodes($subNodes, $indent . '  ');
+                $result .= $indent . "]\n";
             } elseif ($subNodes instanceof Node) {
-                echo $indent . $name . ":\n";
-                self::dumpNode($subNodes, $indent . '  ');
+                $result .= $indent . $name . ":\n";
+                $result .= self::dumpNode($subNodes, $indent . '  ');
             } else {
-                echo $indent . $name . '(' . $subNodes . ")\n";
+                $result .= $indent . $name . '(' . $subNodes . ")\n";
             }
         }
+        return $result;
     }
 }

@@ -22,20 +22,22 @@ class Type
     const INTERSECTION   = 0b00010000000000;
     const POINTER        = 0b00100000000000;
     const TYPE_REFERENCE = 0b01000000000000;
+    const CALLABLE       = 0b10000000000000;
 
     const COMPLEX_TYPE  = self::UNION | self::INTERSECTION;
-    const SIMPLE_TYPE = ~(self::ARRAY | self::COMPLEX_TYPE | self::POINTER | self::TYPE_REFERENCE);
+    const SIMPLE_TYPE = ~(self::ARRAY | self::COMPLEX_TYPE | self::POINTER | self::TYPE_REFERENCE | self::CALLABLE);
 
     const _MAP = [
-        self::UNKNOWN => 'unknown',
-        self::NONE    => 'none',
-        self::NULL    => 'null',
-        self::INT     => 'int',
-        self::FLOAT   => 'float',
-        self::STRING  => 'string',
-        self::TRUE    => 'true',
-        self::FALSE   => 'false',
-        self::OBJECT  => 'object',
+        self::UNKNOWN  => 'unknown',
+        self::NONE     => 'none',
+        self::NULL     => 'null',
+        self::INT      => 'int',
+        self::FLOAT    => 'float',
+        self::STRING   => 'string',
+        self::TRUE     => 'true',
+        self::FALSE    => 'false',
+        self::OBJECT   => 'object',
+        self::CALLABLE => 'fn'
     ];
 
     protected $type = self::UNKNOWN;
@@ -90,6 +92,10 @@ class Type
             return '(' . implode('&', array_map(function (Type $t) {
                 return $t->toString();
             }, $this->subTypes)) . ')';
+        } elseif ($this->type & self::CALLABLE) {
+            return 'fn(' . implode(',', array_map(function (Type $t) {
+                return $t->toString();
+            }, array_slice($this->subTypes, 0, -1))) . '):' . end($this->subTypes)->toString();
         } elseif ($this->type & self::POINTER) {
             return 'pointer<' . $this->subTypes[0]->toString() . '>';
         } elseif ($this->type & self::ARRAY) {

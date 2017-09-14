@@ -1,6 +1,8 @@
 <?php
 
-namespace Prerano\CFG;
+namespace Prerano\Language;
+
+use Prerano\CFG\Node;
 
 interface Block
 {

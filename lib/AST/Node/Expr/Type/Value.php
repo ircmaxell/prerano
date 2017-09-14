@@ -1,13 +1,13 @@
 <?php
 
-namespace Prerano\AST\Node\Expr;
+namespace Prerano\AST\Node\Expr\Type;
 
 use Prerano\AST\Node;
-use Prerano\AST\Node\Expr;
+use Prerano\AST\Node\Expr\Type;
 
-class Variable extends Expr
+class Value extends Type
 {
-    public $name;
+    public $value;
 
     /**
      * Constructs an assignment node.
@@ -16,14 +16,14 @@ class Variable extends Expr
      * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Node\Name $name, array $attributes = array())
+    public function __construct(Node\Expr $value = null, array $attributes = array())
     {
         parent::__construct($attributes);
-        $this->name = $name;
+        $this->value = $value;
     }
 
     public function getSubNodeNames()
     {
-        return array('name');
+        return array('value');
     }
 }

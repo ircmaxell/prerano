@@ -1,9 +1,15 @@
 <?php
 
-namespace Prerano\CFG;
+namespace Prerano\Language;
+
+use Prerano\CFG\Node;
 
 abstract class BlockAbstract implements Block
 {
+    protected $variables = [];
+    protected $names = [];
+    protected $input = [];
+    
     protected $inbound = [];
     protected $outbound = [];
     protected $nodes = [];
@@ -60,6 +66,18 @@ abstract class BlockAbstract implements Block
         return $this->input;
     }
 
+    public function namedVariable(string $name, int $mode): Variable
+    {
+        switch ($mode) {
+            case Block::MODE_RO:
+                return $this->read($name);
+            case Block::MODE_WO:
+                return $this->write(new Variable\Named($name, new Type(Type::UNKNOWN)));
+            default:
+                throw new \LogicException("Unsupported mode: $mode");
+        }
+    }
+
     public function write(Variable $variable, Variable $value = null): Variable
     {
         $this->addVariable($variable);
@@ -75,7 +93,10 @@ abstract class BlockAbstract implements Block
 
     public function read(string $name): Variable
     {
-        $variable = new Variable\Named($name);
+        if (isset($this->variables[$name])) {
+            return $this->variables[$name];
+        }
+        $variable = new Variable\Named($name, new Type(Type::UNKNOWN));
         $this->addVariable($variable);
         if (!isset($this->names[$name])) {
             if (!isset($this->input[$name])) {
@@ -97,5 +118,10 @@ abstract class BlockAbstract implements Block
             $this->edges[$destId] = [];
         }
         $this->edges[$destId][] = $source;
+    }
+
+    protected function addVariable(Variable $variable)
+    {
+        $this->variables[$variable->getId()] = $variable;
     }
 }

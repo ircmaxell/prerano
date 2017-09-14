@@ -1,0 +1,5 @@
+package Foo::Bar;
+
+fn length(string $a) int {
+    php::strlen($a);
+}

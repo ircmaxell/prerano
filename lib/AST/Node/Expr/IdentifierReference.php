@@ -2,14 +2,12 @@
 
 namespace Prerano\AST\Node\Expr;
 
+use Prerano\AST\Node;
 use Prerano\AST\Node\Expr;
 
-class Assign extends Expr
+class IdentifierReference extends Expr
 {
-    /** @var Expr Variable */
-    public $var;
-    /** @var Expr Expression */
-    public $expr;
+    public $name;
 
     /**
      * Constructs an assignment node.
@@ -18,15 +16,14 @@ class Assign extends Expr
      * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Expr $var, Expr $expr, array $attributes = array())
+    public function __construct(Node\Name $name, array $attributes = array())
     {
         parent::__construct($attributes);
-        $this->var = $var;
-        $this->expr = $expr;
+        $this->name = $name;
     }
 
     public function getSubNodeNames()
     {
-        return array('var', 'expr');
+        return array('name');
     }
 }
