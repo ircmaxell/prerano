@@ -8,6 +8,5 @@ These documents are rapidly changing.
 
 ## Table Of Contents
 
- * [About](01-about.md)
- * [Language Design](02-language_design.md)
- * [Specification](specification/)
+* TOC
+{:toc}

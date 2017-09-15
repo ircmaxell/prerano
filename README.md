@@ -12,5 +12,5 @@ Right now, it's just a toy and proving ground. Over time, if it's deemed useful,
 
 ## More Info
 
-Check the [documentation](doc/), and specifically the [language design document](doc/02-language_design.md).
+Check the [documentation](docs/), and specifically the [language design document](docs/02-language_design.md).
 
