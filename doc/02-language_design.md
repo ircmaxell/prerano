@@ -12,20 +12,20 @@ Prerano comes with a bunch of types baked in.
 
 Primitive Types (identical to PHP's version):
 
- * `null`
+
  * `string`
  * `int`
  * `float`
- * `true`
- * `false`
+
 
 Complex Types:
 
  * `array<T>` <-- A nummerically indexed array
  * `dict<T>`  <-- A string index php array
- * `object<key:T>` <-- A php StdClass object, with types specified on keys
  * `tuple<T,U,...>` <-- an immutable collection of multiple items
- * `fn<P1,P2,...,R>` <-- A callable function, lambda or closure with the signature (P1, P2, ...): R
+ * `fn(P1,P2)R` <-- A callable function, lambda or closure
+ * `pointer<T>` <-- A pointer to a type (generated as a PHP reference for public functions)
+
 
 Meta Types:
 
@@ -33,16 +33,23 @@ Meta Types:
  * `bool` <-- defined as `true|false`
  * `numeric` <-- defined as `int|float`
  * `none` <-- causes an error if assignment is attempted. Defined as `~any`
+ * `null`
+ * `true`
+ * `false`
 
 ### Named Types
 
 You can define a named type by using the `type` operator:
 
+    [modifier] type typeName = typeValue
+
+Example:
+
     type numeric = int|float;
 
 Like with the rest of Prerano, types are defined private by default. You must make them `public` or `protected`:
 
-    type public strings = array<string>;
+    public type strings = array<string>;
 
 ### Type Algebra
 
@@ -82,6 +89,14 @@ The `any` type already includes `null`, so `any?` is redundant though allowed.
 
 You may notice that this is also possible by declaring `string|null`. `?` is simply short-hand for that (and results in the identical type expression).
 
+#### Pointer Modifier
+
+Pointers can be created by appending a `*` to the type declaration.
+
+    string*
+
+When this code is generated to PHP, it will be compiled as a PHP reference for outside calls. Inside of Prerano code, it will be implemented using an object to preserve type safety.
+
 #### Type Parameterization
 
 Some types (specifically complex types and classes) can support type parameterization. Type parameters are defined using `<>`. A few examples:
@@ -98,15 +113,6 @@ When defining classes you can paramterize the class along with the methods:
         def add(T $item) = /*...*/
         def get(int $offset): T = /*..*/
     }
-
-You can also let inference try to infer the types involved. For example:
-
-    $a = [1, 2]; // A is inferred as array<int>
-
-    def identity<T>(array<T> $a): array<T> = $a; // Explicit version
-    def identity(array $a) = $a; // type parameterization will be retained
-
-    $b = identity($a); // no need to parameterize, as it's inferable
 
 #### Variance Support
 
@@ -127,100 +133,188 @@ And the same holds true for local variables:
 
     $foo = 0; // Type int inferred
     $bar = "something"; // type string inferred
-    $object = Object(name: "a"); // type object<name:string> inferred
     var array? $items; // Can't infer, so declare
 
 ### Parameters
 
 **All** parameters must have type declarations. Just like PHP types come before the variable:
 
-    def identity(any $item) /*...*/
-
-However, parameterized types don't need to be implied and can be inferred if necessary:
-
-    def foo(array $a) = $a;
-
-Here, the sub-type of `$a` isn't needed. In general, the only time you need to specify the parameterization is if it matters to your operation:
-
-    def concat(array<string> $a): string = /*...*/
-
-Therefore, the following two are identical and both type-system legal:
-
-    def foo(array $b) = $b[0]; // when called with array<string> returns string
-
-    def foo<T>(array<T> $b): T = $b[0];
+    fn identity(any $item) /*...*/
 
 
 ### Return Types
 
-Return types *may* be omitted if the type can be inferred from the body of the function. For example: 
+Return types must always be included as well:
 
-    def identity(any $item) = $item;
-
-This simple (and pointless) function can be proven to return the explicit type `any` because the type of `$item` is well defined. Here are a few more examples
-
-    def add(int $a, float $b) = $a + $b; // Well defined, because int + float is always float
-
-    def namedPerson(string $name) = Person(name: $name); // Well defined, because it *always* returns a `Person` object
-
-    def getPrice(string $item) = match($item) {
-        "cake" -> 5;
-        "pie" -> 5.5; // This is OK, since we can "widen" int to float and cover all bases
-        else -> 10;
-    }
-
-Here's a problematic example:
-
-    def getId(string $item) = match($item) {
-        "cake" -> 42;
-        "pie" -> "pie"; // Compile error, union types are not inferred automatically and must be explicit
-    }
-
-This can be solved by declaring the union explicitly:
-
-    def getId(string $item): int|string = match($item) {
-        "cake" -> 42;
-        "pie" -> "pie"; // Compile error, union types are not inferred automatically and must be explicit
-    }
+    fn identity(any $item) any = $item
 
 ## Type Safety
 
 By design, type unsafe operations are not allowed in Prerano. The compiler will identify unsafe operations and prevent you from calling them. For example:
 
-    def length(any $item) = strlen($item);
+    fn length(any $item) int = php::strlen($item); // Compile error
 
-Would result in a compile error, as `strlen` expects a `string` argument, and you may have passed a non-string. The correct way of handling that is to use type expressions to determine the real type:
+Would result in a compile error, as `php::strlen` expects a `string` argument, and you may have passed a non-string. The correct way of handling that is to use type expressions to determine the real type:
 
-    def length(any $item) = match($item) {
+    fn length(any $item) int = match($item) {
         string -> strlen($item);
         array, \Countable -> count($item);
         default: 0;
-    };
+    }
 
 The compiler will also detect when type restrictions occur and infer the type properly based on that information. For example:
 
-    def length(any $item) {
+    fn length(any $item) int {
         if ($item is string) {
-            return strlen($item); // Works because we can infer that item must be a string
+            return php::strlen($item); // Works because we can infer that item must be a string
         }
         return 0;
     }
+
+    
+### Assignment Semantics
+
+You can only change the type of variable at declaration time. Once a variable is declared, its type cannot be changed. For purposes of this rule, a variable is considered a variable anywhere the scope is defined (it uses the same name).
+
+For example, this is illegal:
+
+    $name = "foo";
+    $name = 1; // CompileError as type changed from string to int
+    
+However, once you define a type, you can assign a value as long as that value is allowed by the type:
+
+    var string|int $foo = 123;
+    $foo = "test";
+    $foo = 542; // All legal, as the type of $foo is string|int
+    
+This is known as "resolving":
+
+### Resolving semantics
+
+We can say that `A` **resolves** `B` if the following conditions are met:
+
+ * If `A == B`
+ * If `A` is a union, all sub-types of `A` must resolve `B`
+ * If `A` is an intersection, at least one sub-type of `A` must resolve `B`
+ * If `A` is a value type, it resolves `B` if `A` without value resolve `B` (value of `int(1)` resolves `int`)
+ * If `B` is a union, at least one sub-type of `B` must be resolved by `A`
+ * If `B` is an intersection, all sub-types of `B` must be resolved by `A`
+ * If `A` is a sub-type of `B` (for these purposes, `int` is a sub-type of `float`)
+
+Let's look at a few examples:
+
+ * `int` resolves `int` <- Because they are equal
+ * `int|string` does not resolve `int` <-- because string doesn't resolve int
+ * `int&string` resolves `int` <-- because at least one of the intersection resolves it
+ * `1` resolves `int` <-- because the value 1 is of type int
+ * `int` resolves `int|string` <- Because at least one of the union matches
+ * `int` does not resolve `int&string` <- Because `int` doesn't resolve `string`
+ * `int` resolves `float` <-- Because int is a sub-type of float
+
+This is used to support "variance":
+
+Types `A` and `B` are said to be:
+
+ * **invariant** if `A == B`
+ * **covariant** if `A resolves B`
+ * **contravariant** if `B resolves A`
+
+Some common situations:
+
+ * Assignment - `RESULT = EXPR` is covariant across the type of `EXPR` and `RESULT`
+
+
+        // Covariant because "1" resolves "int|string"
+        var int|string $a = 1;
+
+ * Passing Arguments - `(ARG)` is covariant to the declared type of the parameter
+
+        fn foo(int|string $a) none {}
+        // Covariant because "1" resolves the declaration's type "int|string"
+        foo(1);
+
+ * etc
+
+### Types Can Narrow Over Time
+
+The compiler will also detect when type restrictions occur and infer the type properly based on that information. For example:
+
+    fn length(any $item) int {
+        if ($item is string) {
+            // `is` is like instanceof, but for generic types
+            return php::strlen($item); // Works because we can infer that item must be a string
+        }
+        0;
+    }
+    
+The compiler will detect at each point which possibilities exist for a type and use the inferred type wherever possible.
+
+This means, as long as the compiler can prove the type is narrowed, type expressions can be avoided. For example:
+
+    fn foo(): string { /*...*/ }
+    
+    var string|int $abc = 1;
+    $abc = foo();
+    $length = php::strlen($abc); // works, because we can prove $abc must be a string here due to foo() returning a string
+    
+While sometimes it may not be as obvious why the type didn't narrow:
+
+    def foo(): string|int { /*...*/ }
+    
+    var string|int $abc = "test";
+    php::strlen($abc); // works fine as even though abc is declared to be string|int
+    // It's inferred to be string here for this usage, since it can't be anything else due to the initalization to "test"
+    do {
+        php::strlen($abc); // This is not safe, as one branch has it being a string, another being string|int
+        $abc = foo();
+    } while (true);
+    
+
+## Enums
+
+It's worth talking about ENUMs here, as they are easy to talk about once we understand types.
+
+An enum is just a type that has a set of values it could be.
+
+We could define an enum of `STATUS` using type expressions:
+
+    type GOOD = 1;
+    type BAD = 2;
+    type STATUS = GOOD|BAD;
+
+And we have our enum!
+
+However, that's an aweful lot to type. So we have a short-hand for that exact thing:
+
+    enum STATUS {
+        GOOD,
+        BAD
+    }
+
+If you want to assign values to the entry's you can:
+
+    enum STATUS {
+        GOOD = 1,
+        BAD = 2
+    }
+
+Enums generate a type under the hood, and as such are interchangable with types above.
 
 ## Functions and Methods
 
 Named Functions and methods are declared using the following syntax:
 
-    def [visibility] methodName[<typeParameters...>]([parameters...]) [:returnType]
+    [visibility] fn methodName[<typeParameters...>]([parameters...]) returnType
 
 Note that functions and methods are private by default and must be made explicitly `protected` or `public`. For functions, `private` means private to the file, and `protected` means only exposed to the package.
 
 The body of functions and methods can be a single expression using `=`:
 
-    def foo() = "bar";
+    fn foo() string = "bar";
 
 Or they can be blocks. If a block is used, the return value is the last executed expression:
 
-    def foo() {
+    fn foo() string {
         "bar"; // returns "bar"
     }
 
@@ -230,47 +324,30 @@ You can also use explicit returns:
         return "bar";
     }
 
-### Anonymous Functions (Lambdas)
-
-Lambdas are declard using the `fn` type:
-
-    fn 1;
-
-This declares a lambda of no arguments which returns the value 1
-
-    fn($a) $a * 2;
-
-Declares a lambda of 1 argument which squares the argument.
-
-Other examples:
-
-    fn($a, $b) { $a++; $b++; $a + $b; } // Adds 1 to $a, $b and then adds $a + $b
-
-    fn($a) $a * 2; // Type inference makes the function fn<numeric,numeric>
-
-    fn($a) strlen($a) + 1; // Type inference makes the function fn<string,int>
-
-    fn(int $a): int $a + 1; // explicit typing
-
-
 ### Expression Methods
 
 Prerano lets you declare functions that "look" like methods, but are external to the class. This is useful for primitive types (non-classes) as well as convinence functions. You simply prefix the function's name with the type you're decorating:
 
-    def [visibility] typeName.methodName[<typeParamters...>]([parameters...]) [:returnType]
+    [visibility] on typeName fn methodName[<typeParamters...>]([parameters...]) returnType
 
 The body will be called with `$this` set to the value of type (NOTE: `$this` will NOT ALWAYS BE AN OBJECT)
 
 For example:
 
-    def array<T>.map(fn<T,V> $fn): array<V> = array_map($this, $fn);
+    on array<T> fn map(fn<T,V> $fn) array<V> = php::array_map($this, $fn);
 
-That looks a bit gross, but it's explicit and safe. Since `array_map` is a "core" function, we can infer the type of the result. So we can simplify:
+That looks a bit gross, but it's explicit and safe. Looking into how to make it less-gross without compromising type safety.
 
-    def array.map(fn $fn) = array_map($this, $fn);
+One option is to use inference to tell:
+
+    on array fn map(fn $fn) array = php::array_map($this, $fn);
+
+This would still result in the same type signatures for the parameter and the array, but instead would be inferred through the body/block. Still in the air
 
 ## Classes and Objects
 
+
+TODO A LOT IN HERE: **NOT CORRECT**
 
 ### Classes
 
@@ -290,77 +367,58 @@ Constructors are declared within the class body using the `constructor` keyword:
 
 Properties are declared **private** and cannot be made public or protected. However, getters and setters can be generated (protected visibility by default).
 
-    var [type] $propertyName [= propertyInitializer] [{
+    var [type] $propertyName [{
+        [= propertyInitializer] 
         [[getterVisibility] get [= getter];]
         [[setterVisibility] set [([type] $value) = setter];]
     }]
 
 A few examples:
 
-    var $age = 0  {     // type inferred to int
+    var $age {     // type inferred to int
+        = 0;
         public get;      // public getAge(): int generated
         public set;     // public setAge(int $age) { $this->age = $age; }
 
     var $count = 1;     // type inferred to int, private only
 
-    var $person = Person() {
+    var $person { // Type inferred to result of person function
+        = person();
         public get = clone $this->person;
         public set;     // public setPerson(Person $value)
     }
 
-    var $template = "" {
+    var $template {
+        = "";
         public get;
         public set(string|array $value) = /* build template as string */;
     }
 
-### Method overloading
+### AutoProperties
 
-Classes can contain multiple methods of the same name:
+You can assign to a property in a parameter block (any method parameter block, even non-constructors) just by prefixing with `$this->`.
 
-    class Person {
-        def method(string $firstName): Person = /*...*/
-        def method(string $firstName, $lastName): Person = /*...*/
-    }
-
-When the class contains a single method, it will be compiled as the method name in PHP code. When the class contains multiple methods, a match block will be generated, similar to this:
+For example:
 
     class Person {
-        def method(any ...$args): Person = match($args) {
-            tuple<string> -> { /* method1's body */ };
-            tuple<string, string> -> { /* method2's body */ };
-            else -> throw BadMethodCallException("Non-existant method called")
-        }
+        var string $firstName;
+        constructor(string $this->firstName) = /*...*/
+    }
+    
+For constructors only, you can omit the property declaration if it has no getter/setter and is private. For example, the following is identical to the preceeding:
+
+    class Person {
+        constructor(string $this->firstName) = /*...*/
+    }
+    
+If the property was predefined, you can use the type of the property instead of duplicating it. For example:
+
+    class Person {
+        var string $firstName;
+        constructor($this->firstName) = /*...*/
     }
 
-Additionally, if the types are different, the return value of the generated method will be based on the union of the types.
-
-### Multiple Inheritance (not sure)
-
-Prerano supports multiple inheritance out of the box. 
-
-    class A {
-        def foo() = "A";
-    }
-    class B {
-        def bar() = "B";
-    }
-    class AB < A,B {
-    }
-
-The One catch is that if a method is defined in more than one parent, you must override the method locally:
-
-    class A {
-        def foo() = "A";
-    }
-    class B {
-        def foo() = "B";
-        def bar() = "B";
-    }
-    class AB < A,B {
-        def foo() = "AB";
-    }
-
-The way this is resolved internally is that `B` is internally copied to `B'` in which `B`'s root parent is compiled to extend A).
+Auto properties are assigned prior to the method execution.
 
 ## Control Flow
 
@@ -386,11 +444,27 @@ Additionally, since blocks are expressions, you can make normal-looking if state
         doSomethingElse();
     }
 
+Behind the scenes, the result of the `if` is the result of those two function calls. So, if your function returns, you can skip the `return` keyword and simply let the result of the if pass:
+
+    fn boolToInt(bool $a) int {
+        if ($a) { // Since the IF is the last expression, the result is passed to the return of the function
+            1;
+        } else {
+            0;
+        }
+    }
+
+Thereby, when you call `foo(true);` then the true block is executed, and its result passed back as the result of the function.
+
+Additionally, since this block is only executing a single expression (`if`), we could define `bool.toInt()` as:
+
+    on bool fn toInt() int = if ($this) 1 else 0;
+
 ### Match
 
 You've seen `match` used before in this document. It is used as a "pattern matching" tool. The idea is a cross between a `switch` and a type recognizer. And you can mix and match:
 
-    match($variable>) {
+    match($variable) {
         when, when -> then;
         when -> then;
         else -> then;
@@ -418,7 +492,7 @@ You may omit `else` **ONLY** if the compiler can ensure that all possible cases 
 
 The following example should illustrate when else is not needed:
 
-    def test(): int|string = /* something */;
+    fn test(): int|string = /* something */;
 
     match ($tmp = test()) {
         int -> $tmp;
@@ -447,62 +521,123 @@ And
 
     do expr while($bool);
 
-### Passing lambdas and blocks
-
-Any function that accepts a `fn` as its final argument can be called without it, but specifying a block (if no parameters) or a lambda immediately following the call.
-
-For example:
-
-    def array<T>.map(fn<T,V>): array<V> {
-        var array<V> $result = [];
-        for ($value in $this) $result[] = fn($value);
-        $result;
-    }
-
-    [1,2].each() fn($el) $el + 1;
 
 ## Packages
 
 Everything in Prerano revolves around packages. When Prerano is compiled, it is compiled a package at a time. A package is considered everything inside of a folder (all `*.pr` files in the folder). The file must declare the package it belongs to.
 
+    package Foo\Bar;
+    
+Every file **must** start with a package declaration (first non-comment token must be package). And every file must have exactly one package declaration.
+
+At compile time, each package is compiled as a single unit. Meaning that all files in the directory are loaded, parsed and compiled together (if multiple packages exist in a single directory, they will be compiled appropriately as separate packages).
+
+### Compilation
+
+Compilation will be triggered via three methods. One is intended to be used in development, one in test, and another in production:
+
+#### Development Mode
+
+In development mode an autoloader will be used to trigger compilation. Whenver a symbol is requested for an unseen namespace *within configured namespace prefixes*, PHP will trigger the Prerano autoloader. If a `__prerano_package.php` file exists in the directory, the autoloader will load it and return. If it does not, it will start the compiler for that directory and scan for `*.pr` files at least one is found, the entire set will be compiled and the generated code passed to PHP via `eval()`.
+
+#### Test Mode
+
+In test mode, the code's test methods are rendered using a configured test runner, and executed. This means that unit tests are built right into the language.
+
+#### Production Mode
+
+In production mode, a compiler will iterate through a directory (or set) and compile every package found. In each folder, the compiler will output a `__prerano_package.php` file with the compiled package. From here, the file can be checked into source control or deployed to production.
+
+This allows distribution of compiled code without having to need for end-users to use prerano. So library authors can author in prerano, and distribute (target) PHP.
+
 ### Interacting with PHP.
 
 PHP uses namespaces. Prerano packages are similar in that public constants/functions/classes are declared using PHP's namespaces.
 
-In addition, a __PRERANO_PACKAGE__ class will be defined in each prerano package compilation result, which houses metadata (used for compiling other packages) and protected/private variables and members.
+In addition, a `__PRERANO_METADATA__` class will be defined in each prerano package compilation result, which houses metadata (used for compiling other packages).
+
+Finally, a `__PRERANO_CODE__` class will be defined which contains all compiled code.
+
+Additionally, the file will contain all public functions and classes (and interfaces, and traits) compiled into the PHP version. These compiled blocks will "proxy" inside of the `__PRERANO_CODE__` object doing type validation and conversion where necessary to ensure type safety
 
 ### "Global" code
 
-Prerano has no concept of global code. All code written inside of a package is run package-local. For example:
+Prerano has no concept of global code. For example:
 
     package Foo\Bar;
-    $a = 1;
+    $a = 1; // Compile error, code here is not allowed
 
-Would be compiled to PHP as (something like):
+The only code allowed in the root are definitions (type, class, function, etc).
+
+But sometimes you want to run code when loading a package. For this reason, you can declare a named function `main()` which will be called when the package is loaded:
+
+    package Foo\Bar;
+    fn __main__() none {
+        setup();
+    }
+    fn setup() none {
+        // Do some setup!
+    }
+
+Would be compiled to PHP similar to:
 
     <?php
     namespace Foo\Bar;
 
-    class __PRERANO_PACKAGE__ {
-        private static $isInitialized = false;
-        private function __construct();
-        public static function boot() {
-            // snip
-            $this->init();
-            // snip
+    class __PRERANO_CODE__ {
+        private static $instance;
+        private function __construct() {
+            $this->setup();
         }
-        private function init() {
-            // snip
-            $a = 1;
+        public static function boot() {
+            if (!self::$instance) {
+                self::$instance = new self;
+            }
+            return self::instance();
+        }
+        private function setup() {
+            // Do some setup!
         }
     }
-    __PRERANO_PACKAGE__::boot();
+    __PRERANO_CODE__::boot();
 
 ### "Global" Variables
 
 Prerano has no concept of global variables either. Attempting to use a super-global from PHP will result in a compiler error.
 
 Instead, to access them, either take arguments, or call functions to get the data.
+
+## Differences From PHP
+
+It’s worth talking about the differences from PHP that are aimed at simplifying and unifying the language.
+
+### Lack of Constants
+Prerano has no concept of “constant”. This is because it uses types heavily it doesn’t need constants (you can just define types instead).
+
+However, Prerano is designed to interact with PHP. For this reason, there is an “adapter”. Public value types will generate constants where they are defined. For example:
+
+    class HTTP {
+        type public MODE_HTTP1 = "http/1.0";
+        type public MODE_HTTP11 = "http/1.1";
+        type public MODE_HTTP2 = "http/2";
+        type MODES = MODE_HTTP1|MODE_HTTP11|MODE_HTTP2;
+    }
+
+When compiled into PHP, this will generate 3 class constants:
+
+    class HTTP {
+        const MODE_HTTP1 = "http/1.0";
+        const MODE_HTTP11 = "http/1.1";
+        const MODE_HTTP2 = "http/2";
+    }
+
+Note that only value types are supported for export.
+
+To read constants, you will need to use a special construct to fetch the constant:
+
+    $value = const(__DIR__);
+    $value = const(PHPClass::CONST);
+    
 
 ## Other
 

@@ -11,4 +11,4 @@ test:
 		vendor/bin/phpunit --coverage-text
 
 build-examples: rebuild
-		php examples/run.php
+		php examples/rebuild.php

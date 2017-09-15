@@ -1,0 +1,62 @@
+Package Prerano::Examples::DefiningTypes
+  Stmt_Type
+    name:
+      Name
+        parts [
+          numeric
+        ]
+    type:
+      Expr_Type_Union
+        left:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  string
+                ]
+        right:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+  Stmt_Type
+    name:
+      Name
+        parts [
+          age
+        ]
+    type:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+  Stmt_Enum
+    name:
+      Name
+        parts [
+          STATUS
+        ]
+    subTypes [
+      Stmt_Type
+        name:
+          Name
+            parts [
+              GOOD
+            ]
+        type:
+          Expr_Type_Value
+            value(0)
+      Stmt_Type
+        name:
+          Name
+            parts [
+              BAD
+            ]
+        type:
+          Expr_Type_Value
+            value(1)
+    ]

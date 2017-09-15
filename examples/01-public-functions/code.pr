@@ -4,9 +4,7 @@ fn inc(int $a) int {
     $a + 1;
 }
 
-public fn incByTwo(int $a) int {
-    inc(inc($a));
-}
+public fn incByTwo(int $a) int = inc(inc($a))
 
 fn __main__() none {
     incByTwo(10);

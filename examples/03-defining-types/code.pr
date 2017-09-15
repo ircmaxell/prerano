@@ -1,0 +1,10 @@
+package Prerano::Examples::DefiningTypes;
+
+type numeric = string|int
+
+public type age = int
+
+public enum STATUS {
+    GOOD,
+    BAD
+}
