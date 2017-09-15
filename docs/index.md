@@ -8,5 +8,7 @@ These documents are rapidly changing.
 
 ## Table Of Contents
 
-* TOC
-{:toc}
+ * [About](01-about)
+ * [Language Design](02-language_design)
+
+More to come!
