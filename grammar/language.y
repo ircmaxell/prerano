@@ -7,11 +7,18 @@
 %left '*' '?'
 %right '<' '>'
 %left ':'
+%left ','
+%right T_SKINNY_ARROW
 %right T_TYPE
 %right T_FUNCTION
 %right T_ON
+%right T_IS
+%right T_ELSE
 %left T_SCOPE_OPERATOR
 
+
+
+%token T_IS
 %token T_TYPE
 %token T_PACKAGE
 %token T_STRING
@@ -22,6 +29,8 @@
 %token T_FUNCTION
 %token T_ENUM
 %token T_SCOPE_OPERATOR
+%token T_MATCH
+%token T_ELSE
 
 %%
 
@@ -88,7 +97,7 @@ type_expr:
     | type_expr '*'                                     { $$ = Node\Expr\Type\Pointer[$1]; }
     | type_expr '?'                                     { $$ = Node\Expr\Type\Union[$1, Node\Expr\Type[Node\Name['null']]]; }
     | type_expr '<' type_expr_list '>'                  { $$ = Node\Expr\Type\Specification[$1, $3]; }
-    | T_FUNCTION '(' type_expr_list ')' ':' type_expr   { $$ = Node\Expr\Type\Function_[$3, $6]; }
+    | T_FUNCTION '(' type_expr_list ')' type_expr   { $$ = Node\Expr\Type\Function_[$3, $5]; }
 ;
 
 type_expr_list:
@@ -145,16 +154,19 @@ parameter:
 ;
 
 expr:
-      scalar                      { $$ = $1; }      
-    | identifier                  { $$ = Node\Expr\IdentifierReference[$1]; }
-    | '$' identifier              { $$ = Node\Expr\Variable[$2]; }
-    | expr '+' expr               { $$ = Node\Expr\BinaryOp\Plus[$1, $3]; }
-    | expr '(' argument_list ')'  { $$ = Node\Expr\FuncCall[$1, $3]; }
-    | '*' expr                    { $$ = Node\Expr\PointerDereference[$2]; }
+      scalar                                    { $$ = $1; }
+    | '{' expr '}'                              { $$ = $2; }  
+    | identifier                                { $$ = Node\Expr\IdentifierReference[$1]; }
+    | '$' identifier                            { $$ = Node\Expr\Variable[$2]; }
+    | expr '+' expr                             { $$ = Node\Expr\BinaryOp\Plus[$1, $3]; }
+    | expr '(' argument_list ')'                { $$ = Node\Expr\FuncCall[$1, $3]; }
+    | '*' expr                                  { $$ = Node\Expr\PointerDereference[$2]; }
+    | expr T_IS type_expr                       { $$ = Node\Expr\Is[$1, $3]; }
 ;
 
+
 function_body:
-      '=' expr                { $$ = [$2]; }
+      '=' expr ';'            { $$ = [$2]; }
     | '{' statement_list '}'  { $$ = $2; }
 ;
 

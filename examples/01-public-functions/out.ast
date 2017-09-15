@@ -41,7 +41,7 @@ Package Prerano::Examples::PublicFunctions
     name:
       Name
         parts [
-          incByTwo
+          getOne
         ]
     returnType:
       Expr_Type_Named
@@ -51,50 +51,10 @@ Package Prerano::Examples::PublicFunctions
               int
             ]
     parameters [
-      Stmt_Parameter
-        name(a)
-        type:
-          Expr_Type_Named
-            name:
-              Name
-                parts [
-                  int
-                ]
-        default()
     ]
     body [
-      Expr_FuncCall
-        name:
-          Expr_IdentifierReference
-            name:
-              Name
-                parts [
-                  inc
-                ]
-        args [
-          Arg
-            value:
-              Expr_FuncCall
-                name:
-                  Expr_IdentifierReference
-                    name:
-                      Name
-                        parts [
-                          inc
-                        ]
-                args [
-                  Arg
-                    value:
-                      Expr_Variable
-                        name:
-                          Name
-                            parts [
-                              a
-                            ]
-                    name()
-                ]
-            name()
-        ]
+      Scalar_LNumber
+        value(1)
     ]
   Stmt_Function
     name:
@@ -118,13 +78,21 @@ Package Prerano::Examples::PublicFunctions
             name:
               Name
                 parts [
-                  incByTwo
+                  inc
                 ]
         args [
           Arg
             value:
-              Scalar_LNumber
-                value(10)
+              Expr_FuncCall
+                name:
+                  Expr_IdentifierReference
+                    name:
+                      Name
+                        parts [
+                          getOne
+                        ]
+                args [
+                ]
             name()
         ]
     ]

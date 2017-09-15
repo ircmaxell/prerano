@@ -18,7 +18,7 @@ class PublicFunctions
         foreach ($package->functions[Package::PUBLIC] as $name => $func) {
             $params = self::params($func);
             $stmts = a(
-                ...self::guards($func),
+                ...self::guards($name, $func),
                 ...[PHP::assign(PHP::var('__result__'), PHP::instanceCall(Scope::resolvePackage($package), Scope::resolveLocal($package, $name), ...self::args($func)))],
                 ...self::postConditions($func)
             );
@@ -35,10 +35,20 @@ class PublicFunctions
         return $result;
     }
 
-    protected static function guards(Function_ $function): array
+    protected static function guards(string $name, Function_ $function): array
     {
         // Not Implemented Yet
-        return [];
+        $results = [];
+        foreach ($function->parameters as $key => $parameter) {
+            $key++;
+            $results[] = PHP::if(
+                PHP::not(TypeCheck::compileExternalCheck(PHP::var($parameter->name), $parameter->getDeclaredType())),
+                [
+                    PHP::throw("TypeException", "Function {$name}() expects parameter {$key} to be " . $parameter->getDeclaredType()->toString())
+                ]
+            );
+        }
+        return $results;;
     }
 
     protected static function postConditions(Function_ $function): array

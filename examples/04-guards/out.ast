@@ -1,0 +1,108 @@
+Package Prerano::Examples::PublicFunctions
+  Stmt_Function
+    name:
+      Name
+        parts [
+          id
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(a)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+      Stmt_Parameter
+        name(b)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  float
+                ]
+        default()
+    ]
+    body [
+      Expr_Variable
+        name:
+          Name
+            parts [
+              a
+            ]
+    ]
+  Stmt_Enum
+    name:
+      Name
+        parts [
+          STATUS
+        ]
+    subTypes [
+      Stmt_Type
+        name:
+          Name
+            parts [
+              GOOD
+            ]
+        type:
+          Expr_Type_Value
+            value()
+      Stmt_Type
+        name:
+          Name
+            parts [
+              BAD
+            ]
+        type:
+          Expr_Type_Value
+            value()
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          decode
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(status)
+        type:
+          Expr_Type_Union
+            left:
+              Expr_Type_Value
+                value:
+                  Scalar_LNumber
+                    value(0)
+            right:
+              Expr_Type_Value
+                value:
+                  Scalar_LNumber
+                    value(1)
+        default()
+    ]
+    body [
+      Expr_Variable
+        name:
+          Name
+            parts [
+              status
+            ]
+    ]

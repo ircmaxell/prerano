@@ -8,13 +8,17 @@ use Generator;
 class Lexer
 {
     const TOKEN_MAP = [
-        'package' => Tokens::T_PACKAGE,
-        'type' => Tokens::T_TYPE,
-        'fn' => Tokens::T_FUNCTION,
         'protected' => Tokens::T_PROTECTED,
+        'package' => Tokens::T_PACKAGE,
         'public' => Tokens::T_PUBLIC,
+        'match' => Tokens::T_MATCH,
+        'else' => Tokens::T_ELSE,
         'enum' => Tokens::T_ENUM,
+        'type' => Tokens::T_TYPE,
         '::' => Tokens::T_SCOPE_OPERATOR,
+        '->' => Tokens::T_SKINNY_ARROW,
+        'fn' => Tokens::T_FUNCTION,
+        'is' => Tokens::T_IS,
         'on' => Tokens::T_ON,
         '!' => 0x21,
         '#' => 0x23,

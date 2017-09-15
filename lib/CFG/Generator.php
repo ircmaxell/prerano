@@ -120,6 +120,41 @@ class Generator
                 $else->write($result);
                 $block = $resultBlock;
                 return $result;
+            case 'Expr_Match':
+                $cond = $this->generateNode($node->cond, $block, Block::MODE_RO);
+                $i = 0;
+                $cases = [];
+                $results = [];
+                $nextBlock = new Block\Simple;
+                foreach ($node->entries as $entry) {
+                    $key = $i++;
+
+                    if ($entry instanceof AST\Stmt\Match\Entry) {
+                        $exprs = [];
+                        foreach ($entry->cond as $condition) {
+                            $exprs[] = $this->generateNode($condition, $block);
+                        }
+                        if (count($exprs !== 1)) {
+                            $expr = new Variable\Phi(...$exprs);
+                        } else {
+                            $expr = $exprs[0];
+                        }
+                    } elseif ($entry instanceof AST\Stmt\Match\Default_) {
+                        $expr = new Variable\IdentifierReference('any');
+                    } else {
+                        throw new \Logic("Unknown match clause found");
+                    }
+                    $outBlock = new Block\Simple;
+                    list($result, $endBlock) = $this->generate($entry->stmts, $outBlock);
+                    $block->addOutboundBlock('match_' . $key, $outBlock);
+                    $endBlock->addOutboundBlock('*', $nextBlock);
+                    $cases[] = new Node\Expr\MatchCase($expr, $key, $result);
+                    $results[] = $result;
+                }
+                $result = new Variable\Phi(...$results);
+                $block->appendNode(new Node\Expr\Match($cond, $cases, $result));
+                $block = $nextBlock;
+                return $result;
             case 'Expr_PointerDereference':
                 $expr = $this->generateNode($node->expr, $block, Block::MODE_RO);
                 $isPtr = $expr->getDeclaredType()->type === Type::POINTER;
@@ -180,6 +215,9 @@ class Generator
             case 'Expr_Type_Union':
                 return (new Type(Type::UNION, null, $this->generateType($type->left), $this->generateType($type->right)))->simplify();
             case 'Expr_Type_Value':
+                if ($type->value instanceof AST\Scalar) {
+                    $type->value = $type->value->value;
+                }
                 switch (gettype($type->value)) {
                     case 'integer': return new Type(Type::INT, $type->value);
                     case 'float': return new Type(Type::FLOAT, $type->value);

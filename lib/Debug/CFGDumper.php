@@ -4,7 +4,7 @@ namespace Prerano\Debug;
 
 use Prerano\Language\Type;
 use Prerano\Language\Block;
-use Prerano\Language\Node;
+use Prerano\CFG\Node;
 use Prerano\Language\Variable;
 use Prerano\Language\Package;
 
@@ -69,10 +69,14 @@ class CFGDumper
                     $children = $node->$name;
                 }
                 foreach ($children as $key => $subNode) {
-                    if (!$subNode instanceof Variable) {
+                    if ($subNode instanceof Variable) {
+                        $result .= "                $name: " . self::dumpVariable($node->$name) . "\n";
+                    } elseif ($subNode instanceof Node\Expr\MatchCase) {
+                        $result .= "                match_{$subNode->id} (" . self::dumpVariable($subNode->cond) . ")\n";
+                    } else {
+                        var_dump($subNode);
                         throw new \LogicException("Nodes can only have variables as children for node $name: " . $node->getName());
                     }
-                    $result .= "                $name: " . self::dumpVariable($node->$name) . "\n";
                 }
             }
         }

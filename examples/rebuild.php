@@ -18,18 +18,25 @@ foreach ($it as $file) {
         continue;
     }
     $dir = $file->getPathname();
+    
+    echo "Building " . $file->getBasename() . "\n";
+
     $code = file_get_contents($dir . '/code.pr');
 
     $start = microtime(true);
 
     $ast = $parser->parse($code);
+    file_put_contents($dir . '/out.ast', Prerano\Debug\ASTDumper::dump($ast));
+
     $package = $generator->generatePackage($ast);
+    file_put_contents($dir . '/out.cfg', Prerano\Debug\CFGDumper::dumpPackage($package));
+
+
     $php = $compiler->compile($package);
 
     $end = microtime(true);
 
-    file_put_contents($dir . '/out.cfg', Prerano\Debug\CFGDumper::dumpPackage($package));
-    file_put_contents($dir . '/out.ast', Prerano\Debug\ASTDumper::dump($ast));
+    
     file_put_contents($dir . '/out.php', $php);
     Prerano\Debug\CFGGrapher::graphPackage($package, $dir . '/out.png', 'png');
 

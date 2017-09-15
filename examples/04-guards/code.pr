@@ -1,0 +1,10 @@
+package Prerano::Examples::PublicFunctions;
+
+public fn id(int $a, float $b) int = $a;
+
+public enum STATUS {
+    GOOD,
+    BAD
+}
+
+public fn decode(0|1 $status) int = $status;

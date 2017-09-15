@@ -7,6 +7,11 @@ use PhpParser\Node as PhpNode;
 
 class PHP
 {
+    public static function and(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\BooleanAnd($left, $right);
+    }
+
     public static function args(PhpNode ...$args): array
     {
         return array_map(function ($arg) {
@@ -178,6 +183,11 @@ class PHP
         return new PhpNode\Expr\ConstFetch(self::name('null'));
     }
 
+    public static function or(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\BooleanOr($left, $right);
+    }
+
     public static function param(string $name): PhpNode
     {
         return new PhpNode\Param($name);
@@ -223,6 +233,11 @@ class PHP
     public static function string(string $value): PhpNode
     {
         return new PhpNode\Scalar\String_($value);
+    }
+
+    public function throw(string $class, string $message): PhpNode
+    {
+        return new PhpNode\Stmt\Throw_(PHP::new($class, PHP::string($message)));
     }
 
     public static function var(string $name): PhpNode
