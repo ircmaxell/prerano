@@ -54,6 +54,27 @@ class TypeTest extends TestCase
         ];
     }
 
+    public static function provideResolve()
+    {
+        return [
+            [new Type(Type::INT), new Type(Type::INT), true],
+            [new Type(Type::INT), new Type(Type::FLOAT), true],
+            [new Type(Type::INT), new Type(Type::UNION, null, new Type(Type::INT), new Type(Type::STRING)), true],
+            [new Type(Type::INT), new Type(Type::UNION, null, new Type(Type::FLOAT), new Type(Type::STRING)), true],
+            [new Type(Type::INT), new Type(Type::UNION, null, new Type(Type::TRUE), new Type(Type::STRING)), false],
+            [new Type(Type::INT), new Type(Type::INTERSECTION, null, new Type(Type::INT), new Type(Type::STRING)), false],
+            [new Type(Type::INT), new Type(Type::INTERSECTION, null, new Type(Type::FLOAT), new Type(Type::STRING)), false],
+            [new Type(Type::UNION, null, new Type(Type::FLOAT), new Type(Type::INT)), new Type(Type::INT), false],
+            [new Type(Type::UNION, null, new Type(Type::FLOAT), new Type(Type::INT)), new Type(Type::FLOAT), true],
+            [new Type(Type::INT, 1), new Type(Type::INT), true],
+            [new Type(Type::INT), new Type(Type::INT, 1), false],
+            [new Type(Type::POINTER, null, new Type(Type::INT)), new Type(Type::POINTER, null, new Type(Type::FLOAT)), true],
+            [new Type(Type::POINTER, null, new Type(Type::INT)), new Type(Type::POINTER, null, new Type(Type::STRING)), false],
+            [new Type(Type::ARRAY, null, new Type(Type::INT)), new Type(Type::ARRAY, null, new Type(Type::FLOAT)), true],
+            [new Type(Type::ARRAY, null, new Type(Type::INT)), new Type(Type::ARRAY, null, new Type(Type::STRING)), false],
+        ];
+    }
+
     /**
      * @dataProvider provideValidStringTypes
      */
@@ -103,5 +124,17 @@ class TypeTest extends TestCase
     public function testNormalize(Type $type, string $expected)
     {
         $this->assertEquals($expected, $type->normalize()->toString());
+    }
+
+    /**
+     * @dataProvider provideResolve
+     */
+    public function testResolve(Type $left, Type $right, bool $expected)
+    {
+        if ($expected) {
+            $this->assertTrue($left->resolves($right), "Failed asserting " . $left->toString() . " resolves " . $right->toString());
+        } else {
+            $this->assertFalse($left->resolves($right), "Failed asserting " . $left->toString() . " does not resolve " . $right->toString());
+        }
     }
 }

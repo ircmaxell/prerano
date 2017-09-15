@@ -1,18 +1,16 @@
 <?php
 namespace Prerano\Compiler\PHP;
 
-use Prerano\Language\{
-    Block,
-    Function_,
-    Package,
-    Type,
-    Variable
-};
+use Prerano\Language\Block;
+use Prerano\Language\Function_;
+use Prerano\Language\Package;
+use Prerano\Language\Type;
+use Prerano\Language\Variable;
 use function Prerano\Compiler\a;
 
 use PhpParser\Node as PhpNode;
 
-class PublicValueConstants 
+class PublicValueConstants
 {
     public static function compile(Package $package): array
     {
@@ -24,7 +22,4 @@ class PublicValueConstants
         }
         return $result;
     }
-
-
-
 }

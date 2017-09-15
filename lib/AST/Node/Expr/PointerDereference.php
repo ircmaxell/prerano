@@ -5,25 +5,25 @@ namespace Prerano\AST\Node\Expr;
 use Prerano\AST\Node;
 use Prerano\AST\Node\Expr;
 
-abstract class BinaryOp extends Expr
+class PointerDereference extends Expr
 {
-    public $left;
-    public $right;
+    public $expr;
 
     /**
      * Constructs an assignment node.
      *
+     * @param Expr  $var        Variable
+     * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Expr $left, Expr $right, array $attributes = array())
+    public function __construct(Node\Expr $expr, array $attributes = array())
     {
         parent::__construct($attributes);
-        $this->left = $left;
-        $this->right = $right;
+        $this->expr = $expr;
     }
 
     public function getSubNodeNames()
     {
-        return array('left', 'right');
+        return array('expr');
     }
 }

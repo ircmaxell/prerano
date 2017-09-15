@@ -1,5 +1,4 @@
-package Foo::Bar;
+package Prerano::Examples::BasicUsage;
 
-fn length(string $a) int {
-    php::strlen($a);
+fn __main__() none {
 }

@@ -96,12 +96,14 @@ class Parser extends ParserAbstract
 #endif
 #reduce
 
-    protected function reduceRule%n() {
+    protected function reduceRule%n()
+    {
         %b
     }
 #noact
 
-    protected function reduceRule%n() {
+    protected function reduceRule%n()
+    {
         $this->semValue = $this->semStack[$this->stackPos];
     }
 #endreduce

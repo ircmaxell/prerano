@@ -1,19 +1,16 @@
 <?php
 namespace Prerano\Compiler\PHP;
 
-use Prerano\Language\{
-    Package,
-    Type
-};
+use Prerano\Language\Package;
+use Prerano\Language\Type;
 use PhpParser\Node as PhpNode;
 
 class PHP
 {
-
     public static function args(PhpNode ...$args): array
     {
-        return array_map(function($param) {
-            return new PhpNode\Arg($param);
+        return array_map(function ($arg) {
+            return new PhpNode\Arg($arg);
         }, $args);
     }
 
@@ -44,6 +41,18 @@ class PHP
         return new PhpNode\Expr\BinaryOp\Plus($left, $right);
     }
 
+    public static function classConst(string $name, PhpNode $value): PhpNode
+    {
+        return new PhpNode\Stmt\ClassConst([
+            new PhpNode\Const_($name, $value)
+        ]);
+    }
+
+    public static function classConstFetch(string $class, string $name): PhpNode
+    {
+        return new PhpNode\Expr\ClassConstFetch(self::name($class), $name);
+    }
+
     public static function classMethod(string $name, int $modifier, array $params, array $stmts)
     {
         return new PhpNode\Stmt\ClassMethod($name, [
@@ -67,9 +76,14 @@ class PHP
 
     public static function funcCall(string $func, PhpNode ...$params): PhpNode
     {
-        return new PhpNode\Expr\FuncCall(self::name($func), array_map(function($param) {
+        return new PhpNode\Expr\FuncCall(self::name($func), array_map(function ($param) {
             return new PhpNode\Arg($param);
         }, $params));
+    }
+
+    public static function identical(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\Identical($left, $right);
     }
 
     public static function if(PhpNode $cond, array $yes, array $no = null): PhpNode
@@ -97,7 +111,6 @@ class PHP
             case Package::PROTECTED: return PhpNode\Stmt\Class_::MODIFIER_PROTECTED;
             case Package::PRIVATE: return PhpNode\Stmt\Class_::MODIFIER_PRIVATE;
         }
-
     }
 
     public static function modifier(string $modifier): int
@@ -108,6 +121,7 @@ class PHP
             case 'private': return PhpNode\Stmt\Class_::MODIFIER_PRIVATE;
             case 'static': return PhpNode\Stmt\Class_::MODIFIER_STATIC;
             case 'abstract': return PhpNode\Stmt\Class_::MODIFIER_ABSTRACT;
+            case 'final': return PhpNode\Stmt\Class_::MODIFIER_FINAL;
         }
         $parts = explode(' ', $modifier);
         if (count($parts) > 1) {
@@ -154,9 +168,24 @@ class PHP
         return new PhpNode\Expr\New_(self::name($class), self::args(...$args));
     }
 
+    public static function not(PhpNode $expr): PhpNode
+    {
+        return new PhpNode\Expr\BooleanNot($expr);
+    }
+
+    public static function null(): PhpNode
+    {
+        return new PhpNode\Expr\ConstFetch(self::name('null'));
+    }
+
     public static function param(string $name): PhpNode
     {
         return new PhpNode\Param($name);
+    }
+
+    public static function paramRef(string $name): PhpNode
+    {
+        return new PhpNode\Param($name, null, null, true);
     }
 
     public static function propFetch(PhpNode $var, string $prop): PhpNode
@@ -200,5 +229,4 @@ class PHP
     {
         return new PhpNode\Expr\Variable($name);
     }
-
-} 
+}

@@ -4,13 +4,11 @@ namespace Prerano\Compiler\PHP;
 
 use PhpParser\Node as PhpNode;
 use Prerano\CFG\Node\Expr\FuncCall;
-use Prerano\Language\{
-    Block,
-    Function_,
-    Package,
-    Type,
-    Variable
-};
+use Prerano\Language\Block;
+use Prerano\Language\Function_;
+use Prerano\Language\Package;
+use Prerano\Language\Type;
+use Prerano\Language\Variable;
 
 class Scope
 {
@@ -96,5 +94,4 @@ class Scope
         }
         return $result;
     }
-
 }

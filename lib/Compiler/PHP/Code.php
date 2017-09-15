@@ -1,13 +1,11 @@
 <?php
 namespace Prerano\Compiler\PHP;
 
-use Prerano\Language\{
-    Block,
-    Function_,
-    Package,
-    Type,
-    Variable
-};
+use Prerano\Language\Block;
+use Prerano\Language\Function_;
+use Prerano\Language\Package;
+use Prerano\Language\Type;
+use Prerano\Language\Variable;
 use function Prerano\Compiler\a;
 
 use PhpParser\Node as PhpNode;
@@ -20,12 +18,11 @@ class Code
         $parts = explode('::', $package->name);
 
         array_pop($parts);
-        $extended = $parts ? new PhpNode\Name\FullyQualified(implode('\\', array_merge($parts, ['__PRERANO_CODE__']))) : null;
         return a(
             new PhpNode\Stmt\Class_(
                 $className,
                 [
-                    'extends' => $extended,
+                    'flags' => PHP::modifier('final'),
                     'stmts' => a(
                         ...self::properties($package),
                         ...[self::init($package)],
@@ -35,16 +32,16 @@ class Code
                         ...[]
                     ),
                 ]
-            )
+            ),
+            PHP::staticCall('__PRERANO_CODE__', Scope::resolveInit($package))
         );
     }
-
 
     protected static function properties(Package $package): array
     {
         return a(
             new PhpNode\Stmt\Property(
-                PHP::modifier('protected static'),
+                PHP::modifier('private static'),
                 [
                     new PhpNode\Stmt\PropertyProperty(Scope::resolveLocal($package, 'instance')),
                 ]
@@ -60,18 +57,19 @@ class Code
             Scope::resolveInit($package),
             [
                 'flags' => PHP::modifier('public static'),
-                'stmts' => a(
+                'stmts' => [
                     PHP::if(
-                        PHP::staticPropFetch('self', Scope::resolveLocal($package, 'instance')),
-                        [PHP::return(PHP::staticPropFetch('self', Scope::resolveLocal($package, 'instance')))]
+                        PHP::not(PHP::staticPropFetch('self', Scope::resolveLocal($package, 'instance'))),
+                        a(
+                            PHP::assign(
+                                PHP::staticPropFetch('self', Scope::resolveLocal($package, 'instance')),
+                                PHP::new('self')
+                            ),
+                            ...$initStmts
+                        )
                     ),
-                    PHP::assign(
-                        PHP::staticPropFetch('self', Scope::resolveLocal($package, 'instance')),
-                        PHP::new('self')
-                    ),
-                    ...$initStmts,
-                    ...[PHP::return(PHP::staticPropFetch('self', Scope::resolveLocal($package, 'instance')))]
-                ),
+                    PHP::return(PHP::staticPropFetch('self', Scope::resolveLocal($package, 'instance')))
+                ],
             ]
         );
     }
@@ -84,7 +82,7 @@ class Code
             switch ($node->getName()) {
                 case 'Expr_BinaryOp_Plus':
                     $return[] = PHP::assign(
-                        Scope::variable($node->result), 
+                        Scope::variable($node->result),
                         PHP::binaryOpPlus(
                             Scope::variable($node->left),
                             Scope::variable($node->right)
@@ -95,6 +93,12 @@ class Code
                     $return[] = PHP::assign(
                         Scope::variable($node->result),
                         Scope::resolveFunctionCall($package, $node, ...$node->args)
+                    );
+                    break;
+                case 'Expr_PointerDereference':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        PHP::instanceCall(Scope::variable($node->expr), 'unwrap')
                     );
                     break;
                 default:
@@ -108,7 +112,6 @@ class Code
     {
         $result = [];
         foreach ($package->functions as $visibility => $functions) {
-            $modifier = PHP::packageToModifier($visibility);
             foreach ($functions as $name => $func) {
                 if ($name === '__main__') {
                     if (count($func->parameters) !== 0) {
@@ -118,7 +121,7 @@ class Code
                 } else {
                     $name = Scope::resolveLocal($package, $name);
                 }
-                $result[] = PHP::classMethod($name, $modifier, self::params(...$func->parameters), a(
+                $result[] = PHP::classMethod($name, PHP::modifier('public'), self::params(...$func->parameters), a(
                     ...self::compileBlock($package, $func->body),
                     ...[PHP::return(Scope::variable($func->result))]
                 ));
@@ -135,5 +138,4 @@ class Code
         }
         return $results;
     }
-
-} 
+}

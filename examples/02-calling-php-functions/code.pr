@@ -1,0 +1,9 @@
+package Prerano::Examples::CallingPHPFunctions;
+
+fn intdiv(int $dividend, int $divisor) int {
+    php::intdiv($dividend, $divisor);
+}
+
+fn __main__() none {
+    intdiv(3, 2);
+}

@@ -19,7 +19,4 @@ class Qualified extends Name
     {
         parent::__construct($prefix->toString() . '::' . $name->toString(), $attributes);
     }
-
-
-
 }

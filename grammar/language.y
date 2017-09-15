@@ -150,6 +150,7 @@ expr:
     | '$' identifier              { $$ = Node\Expr\Variable[$2]; }
     | expr '+' expr               { $$ = Node\Expr\BinaryOp\Plus[$1, $3]; }
     | expr '(' argument_list ')'  { $$ = Node\Expr\FuncCall[$1, $3]; }
+    | '*' expr                    { $$ = Node\Expr\PointerDereference[$2]; }
 ;
 
 function_body:

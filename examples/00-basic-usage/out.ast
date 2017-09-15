@@ -1,0 +1,18 @@
+Package Prerano::Examples::BasicUsage
+  Stmt_Function
+    name:
+      Name
+        parts [
+          __main__
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              none
+            ]
+    parameters [
+    ]
+    body [
+    ]

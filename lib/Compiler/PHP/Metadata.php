@@ -1,18 +1,16 @@
 <?php
 namespace Prerano\Compiler\PHP;
 
-use Prerano\Language\{
-    Block,
-    Function_,
-    Package,
-    Type,
-    Variable
-};
+use Prerano\Language\Block;
+use Prerano\Language\Function_;
+use Prerano\Language\Package;
+use Prerano\Language\Type;
+use Prerano\Language\Variable;
 use function Prerano\Compiler\a;
 
 use PhpParser\Node as PhpNode;
 
-class Metadata 
+class Metadata
 {
     public static function compile(Package $package): array
     {
@@ -21,10 +19,12 @@ class Metadata
             new PhpNode\Stmt\Class_(
                 $className,
                 [
+                    'flags' => PHP::modifier('final'),
                     'stmts' => a(
                         ...self::properties($package),
                         ...[self::init($package)],
-                        ...[self::headers($package)]
+                        ...[self::getHeadersFunction($package)],
+                        ...[self::getFunctionsFunction($package)]
                     ),
                 ]
             )
@@ -39,31 +39,56 @@ class Metadata
                 'flags' => PHP::modifier('public static'),
                 'stmts' => [
                     PHP::if(
-                        PHP::staticPropFetch('self', 'instance'),
-                        [PHP::return(PHP::staticPropFetch('self', 'instance'))]
+                        PHP::not(PHP::staticPropFetch('self', 'instance')),
+                        [PHP::assign(
+                            PHP::staticPropFetch('self', 'instance'),
+                            PHP::new('self')
+                        )]
                     ),
-                    PHP::assign(
-                        PHP::staticPropFetch('self', 'instance'),
-                        PHP::new('self')
-                    ),
+                    PHP::return(PHP::staticPropFetch('self', 'instance')),
                 ],
             ]
         );
     }
 
-    protected static function headers(Package $package): PhpNode
+    protected static function getFunctionsFunction(Package $package): PhpNode
+    {
+        return new PhpNode\Stmt\ClassMethod(
+            'functions',
+            [
+                'flags' => PHP::modifier('public'),
+                'stmts' => a(
+                    PHP::if(
+                        PHP::identical(PHP::null(), PHP::propFetch(PHP::var('this'), 'functions')),
+                        a(
+                            PHP::assign(
+                                PHP::propFetch(PHP::var('this'), 'functions'),
+                                PHP::funcCall('unserialize', PHP::funcCall('base64_decode', PHP::classConstFetch('self', 'FUNCTIONS')))
+                            )
+                        )
+                    ),
+                    PHP::return(PHP::propFetch(PHP::var('this'), 'functions'))
+                ),
+            ]
+        );
+    }
+
+    protected static function getHeadersFunction(Package $package): PhpNode
     {
         return new PhpNode\Stmt\ClassMethod(
             'headers',
             [
                 'flags' => PHP::modifier('public'),
                 'stmts' => a(
-                    PHP::if(PHP::empty(PHP::propFetch(PHP::var('this'), 'headers')), a(
-                        PHP::assign(
-                            PHP::propFetch(PHP::var('this'), 'headers'),
-                            PHP::funcCall('unserialize', PHP::funcCall('base64_decode', PHP::staticPropFetch('self', 'headerDefinitions')))
+                    PHP::if(
+                        PHP::identical(PHP::null(), PHP::propFetch(PHP::var('this'), 'headers')),
+                        a(
+                            PHP::assign(
+                                PHP::propFetch(PHP::var('this'), 'headers'),
+                                PHP::funcCall('unserialize', PHP::funcCall('base64_decode', PHP::classConstFetch('self', 'HEADERS')))
+                            )
                         )
-                    )),
+                    ),
                     PHP::return(PHP::propFetch(PHP::var('this'), 'headers'))
                 ),
             ]
@@ -73,19 +98,19 @@ class Metadata
     protected static function properties(Package $package): array
     {
         return a(
+            PHP::classConst('HEADERS', self::functionHeaders($package)),
+            PHP::classConst('FUNCTIONS', self::functions($package)),
             new PhpNode\Stmt\Property(
-                PHP::modifier('protected static'),
+                PHP::modifier('private static'),
                 [
                     new PhpNode\Stmt\PropertyProperty('instance'),
-                    new PhpNode\Stmt\PropertyProperty('headerDefinitions', self::functionHeaders($package)),
-                    new PhpNode\Stmt\PropertyProperty('functionDefinitions', self::functions($package)),
                 ]
             ),
             new PhpNode\Stmt\Property(
-                PHP::modifier('protected'),
+                PHP::modifier('private'),
                 [
-                    new PhpNode\Stmt\PropertyProperty('headers', PHP::array([])),
-                    new PhpNode\Stmt\PropertyProperty('functions', PHP::array([])),
+                    new PhpNode\Stmt\PropertyProperty('headers', PHP::null()),
+                    new PhpNode\Stmt\PropertyProperty('functions', PHP::null()),
                 ]
             )
         );

@@ -3,13 +3,11 @@
 namespace Prerano\CFG;
 
 use Prerano\AST\Node as AST;
-use Prerano\Language\{
-    Block,
-    Function_,
-    Package,
-    Type,
-    Variable
-};
+use Prerano\Language\Block;
+use Prerano\Language\Function_;
+use Prerano\Language\Package;
+use Prerano\Language\Type;
+use Prerano\Language\Variable;
 
 use LogicException;
 
@@ -122,6 +120,12 @@ class Generator
                 $else->write($result);
                 $block = $resultBlock;
                 return $result;
+            case 'Expr_PointerDereference':
+                $expr = $this->generateNode($node->expr, $block, Block::MODE_RO);
+                $isPtr = $expr->getDeclaredType()->type === Type::POINTER;
+                $result = new Variable\Temp($isPtr ? $expr->getDeclaredType()->subTypes[0] : new Type(Type::UNKNOWN));
+                $block->appendNode(new Node\Expr\PointerDereference($expr, $result));
+                return $result;
             case 'Expr_Variable':
                 if (is_string($node->name)) {
                     return $block->namedVariable($node->name, $mode);
@@ -183,6 +187,7 @@ class Generator
                     default:
                         throw new LogicException("Value types not supported yet for " . getType($type->value));
                 }
+                // no break
             case 'Expr_Type_Specification':
                 if ($type->root->getName() === 'Expr_Type_Named') {
                     // Skip generating the named reference without subtypes
@@ -224,6 +229,4 @@ class Generator
         // Inference will try later to determine the type
         return new Type(Type::UNKNOWN);
     }
-
-
 }

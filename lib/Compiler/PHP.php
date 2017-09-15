@@ -2,13 +2,11 @@
 
 namespace Prerano\Compiler;
 
-use Prerano\Language\{
-    Block,
-    Function_,
-    Package,
-    Type,
-    Variable
-};
+use Prerano\Language\Block;
+use Prerano\Language\Function_;
+use Prerano\Language\Package;
+use Prerano\Language\Type;
+use Prerano\Language\Variable;
 
 use PhpParser\Node as PhpNode;
 use PhpParser\PrettyPrinterAbstract;
@@ -16,7 +14,6 @@ use PhpParser\PrettyPrinter\Standard;
 
 class PHP
 {
-
     public function __construct(PrettyPrinterAbstract $printer = null)
     {
         $this->printer = $printer ?: new Standard;
@@ -43,7 +40,6 @@ class PHP
             ...[]
         );
     }
-
 }
 
 function a(...$any): array

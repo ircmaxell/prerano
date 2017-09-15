@@ -27,7 +27,7 @@ class Function_
         return new Type(
             Type::CALLABLE,
             null,
-            ...array_map(function(Variable\Parameter $param) {
+            ...array_map(function (Variable\Parameter $param) {
                 return $param->getDeclaredType();
             }, $this->parameters),
             ...[$this->returnType]
@@ -40,7 +40,4 @@ class Function_
     {
         $this->parameters = $parameters;
     }
-
-
-
 }

@@ -120,6 +120,73 @@ class Type
         return $type === self::UNKNOWN || $type === ($type & (-1 * $type));
     }
 
+    /**
+     * This method determines if this type will resolve another
+     *
+     * This means that anywhere the $other is a supertype of this,
+     * meaning that for all possibilities, assigning a type of this
+     * to the type other will work (makes sense).
+     *
+     * This is also called "covariance"
+     */
+    public function resolves(Type $other): bool
+    {
+        if ($this->equals($other)) {
+            // invariant
+            return true;
+        }
+        if ($this->type === self::INTERSECTION) {
+            // Only one branch needs to resolve
+            foreach ($this->subTypes as $subType) {
+                if ($subType->resolves($other)) {
+                    return true;
+                }
+            }
+            return false;
+        } elseif ($this->type === self::UNION) {
+            // all branches must resolve
+            foreach ($this->subTypes as $subType) {
+                if (!$subType->resolves($other)) {
+                    return false;
+                }
+            }
+            return true;
+        } elseif ($other->type === self::INTERSECTION) {
+            // Other is an intersection, all must resolve
+            foreach ($other->subTypes as $subType) {
+                if (!$this->resolves($subType)) {
+                    return false;
+                }
+            }
+            return true;
+        } elseif ($other->type === self::UNION) {
+            // Other is a union, only one must resolve
+            foreach ($other->subTypes as $subType) {
+                if ($this->resolves($subType)) {
+                    return true;
+                }
+            }
+            return false;
+        } elseif ($this->type === self::INT && $other->type === self::FLOAT && $other->value === null) {
+            // special case where int widens to float
+            return true;
+        } elseif ($this->type === $other->type || ($this->type === self::INT && $other->type === self::FLOAT)) {
+            // check for variant sub-types
+            if ($this->value !== null && $other->value === null) {
+                // You can expand values into their base type
+                return true;
+            } elseif ($other->value !== null) {
+                // You can't narrow types
+                return false;
+            }
+            if ($this->type & (self::POINTER | self::ARRAY)) {
+                return $this->subTypes[0]->resolves($other->subTypes[0]);
+            }
+            throw new \LogicException("Not implemented yet, need to check sub-types and values for: " . $this->toString() . " and " . $other->toString());
+        }
+        return false;
+    }
+
     public function equals(Type $type): bool
     {
         return 0 === $this->compare($type);

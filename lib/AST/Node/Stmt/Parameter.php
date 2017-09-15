@@ -32,6 +32,4 @@ class Parameter extends Node\Stmt
     {
         return array('name', 'type', 'default');
     }
-
-    
 }

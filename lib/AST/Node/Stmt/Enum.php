@@ -37,5 +37,4 @@ class Enum extends Node\Stmt
     {
         $this->subTypes = $subTypes;
     }
-    
 }

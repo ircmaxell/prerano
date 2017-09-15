@@ -1,30 +1,25 @@
 <?php
 namespace Prerano\Compiler\PHP;
 
-use Prerano\Language\{
-    Block,
-    Function_,
-    Package,
-    Type,
-    Variable
-};
+use Prerano\Language\Block;
+use Prerano\Language\Function_;
+use Prerano\Language\Package;
+use Prerano\Language\Type;
+use Prerano\Language\Variable;
 use function Prerano\Compiler\a;
 
 use PhpParser\Node as PhpNode;
 
-class PublicFunctions 
+class PublicFunctions
 {
     public static function compile(Package $package): array
     {
         $result = [];
         foreach ($package->functions[Package::PUBLIC] as $name => $func) {
-            $params = [];
-            foreach ($func->parameters as $name => $parameter) {
-                $params[] = self::param($name, $parameter);
-            }
+            $params = self::params($func);
             $stmts = a(
                 ...self::guards($func),
-                ...[PHP::assign(PHP::var('__result__'), PHP::instanceCall(Scope::resolvePackage($package), Scope::resolveLocal($package, $name), ...self::params($func)))],
+                ...[PHP::assign(PHP::var('__result__'), PHP::instanceCall(Scope::resolvePackage($package), Scope::resolveLocal($package, $name), ...self::args($func)))],
                 ...self::postConditions($func)
             );
             
@@ -57,13 +52,28 @@ class PublicFunctions
         ];
     }
 
-    protected static function params(Function_ $function): array
+    protected static function args(Function_ $function): array
     {
         // Not Implemented Yet
-        return [
-            
-        ];
+        $result = [];
+        foreach ($function->parameters as $param) {
+            $result[] = PHP::var($param->name);
+        }
+        return $result;
     }
 
+    protected static function params(Function_ $function): array
+    {
+        $params = [];
+        foreach ($function->parameters as $parameter) {
+            if ($parameter->getDeclaredType()->type === Type::POINTER) {
+                // handle reference
 
+                $params[] = PHP::paramRef($parameter->name);
+            } else {
+                $params[] = PHP::param($parameter->name);
+            }
+        }
+        return $params;
+    }
 }
