@@ -107,7 +107,7 @@ Some types (specifically complex types and classes) can support type parameteriz
 
     Collection<Item> # A collection class using the Item class as a parameter type
 
-When defining classes you can paramterize the class along with the methods:
+When defining classes you can parameterize the class along with the methods:
 
     class Collection<T> {
         def add(T $item) = /*...*/
