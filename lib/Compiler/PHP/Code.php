@@ -80,10 +80,61 @@ class Code
         $return = [];
         foreach ($block->getNodes() as $node) {
             switch ($node->getName()) {
+                case 'Expr_Assign':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->var),
+                        Scope::variable($node->expr)
+                    );
+                    break;
+                case 'Expr_BinaryOp_Div':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        PHP::binaryOpDiv(
+                            Scope::variable($node->left),
+                            Scope::variable($node->right)
+                        )
+                    );
+                    break;
+                case 'Expr_BinaryOp_Equals':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        PHP::identical(
+                            Scope::variable($node->left),
+                            Scope::variable($node->right)
+                        )
+                    );
+                    break;
+                case 'Expr_BinaryOp_Mod':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        PHP::binaryOpMod(
+                            Scope::variable($node->left),
+                            Scope::variable($node->right)
+                        )
+                    );
+                    break;
+                case 'Expr_BinaryOp_Mul':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        PHP::binaryOpMul(
+                            Scope::variable($node->left),
+                            Scope::variable($node->right)
+                        )
+                    );
+                    break;
                 case 'Expr_BinaryOp_Plus':
                     $return[] = PHP::assign(
                         Scope::variable($node->result),
                         PHP::binaryOpPlus(
+                            Scope::variable($node->left),
+                            Scope::variable($node->right)
+                        )
+                    );
+                    break;
+                case 'Expr_BinaryOp_Sub':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        PHP::binaryOpSub(
                             Scope::variable($node->left),
                             Scope::variable($node->right)
                         )
@@ -95,6 +146,19 @@ class Code
                         Scope::resolveFunctionCall($package, $node, ...$node->args)
                     );
                     break;
+                case 'Expr_If':
+                    $return[] = PHP::if(
+                        Scope::variable($node->cond),
+                        self::compileBlock($package, $block->getNextBlock('if')),
+                        self::compileBlock($package, $block->getNextBlock('else'))
+                    );
+                    break;
+                case 'Expr_Is':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        TypeCheck::compileInternalCheck(Scope::variable($node->cond), $node->type)
+                    );
+                    break;
                 case 'Expr_PointerDereference':
                     $return[] = PHP::assign(
                         Scope::variable($node->result),
@@ -104,6 +168,9 @@ class Code
                 default:
                     throw new \LogicException("Not Implemented: " . $node->getName());
             }
+        }
+        if ($block->hasNextBlock('*')) {
+            return array_merge($return, self::compileBlock($package, $block->getNextBlock('*')));
         }
         return $return;
     }

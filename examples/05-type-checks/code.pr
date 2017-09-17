@@ -1,0 +1,9 @@
+package Prerano::Examples::TypeChecks;
+
+fn isString(any $arg) bool = $arg is string;
+
+fn isInt(any $arg) bool = $arg is int;
+
+fn isNumeric(any $arg) bool = $arg is int|float;
+
+fn is0or1(any $arg) bool = $arg is 0|1;

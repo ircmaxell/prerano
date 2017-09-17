@@ -21,6 +21,10 @@ class Literal extends VariableAbstract
             $type = new Type(Type::STRING);
         } elseif (is_null($value)) {
             $type = new Type(Type::NULL);
+        } elseif ($value === true) {
+            $type = new Type(Type::TRUE);
+        } elseif ($value === false) {
+            $type = new Type(Type::FALSE);
         } else {
             throw new RuntimException("Unknown literal type provided: " . gettype($value));
         }

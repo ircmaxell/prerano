@@ -5,9 +5,10 @@ namespace Prerano\AST\Node\Expr;
 use Prerano\AST\Node;
 use Prerano\AST\Node\Expr;
 
-class Match extends Expr
+class Is extends Expr
 {
-    public $entries;
+    public $cond;
+    public $type;
 
     /**
      * Constructs an assignment node.
@@ -16,20 +17,15 @@ class Match extends Expr
      * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Node\Expr $cond, array $entries, array $attributes = array())
+    public function __construct(Node\Expr $cond, Type $type, array $attributes = array())
     {
         parent::__construct($attributes);
         $this->cond = $cond;
-        $this->entries = $this->addEntries(...$entries);
+        $this->type = $type;
     }
 
     public function getSubNodeNames()
     {
-        return array('cond', 'entries');
-    }
-
-    protected function addEntries(MatchEntry ...$match): array
-    {
-        return $match;
+        return array('cond', 'type');
     }
 }

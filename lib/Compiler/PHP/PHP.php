@@ -41,9 +41,29 @@ class PHP
         return new PhpNode\Expr\Assign($var, $value);
     }
 
+    public static function binaryOpDiv(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\Div($left, $right);
+    }
+
+    public static function binaryOpMod(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\Mod($left, $right);
+    }
+
+    public static function binaryOpMul(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\Mul($left, $right);
+    }
+
     public static function binaryOpPlus(PhpNode $left, PhpNode $right): PhpNode
     {
         return new PhpNode\Expr\BinaryOp\Plus($left, $right);
+    }
+
+    public static function binaryOpSub(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\Sub($left, $right);
     }
 
     public static function classConst(string $name, PhpNode $value): PhpNode
@@ -74,6 +94,11 @@ class PHP
         ]);
     }
 
+    public static function constFetch(string $name): PhpNode
+    {
+        return new PhpNode\Expr\ConstFetch(self::name($name));
+    }
+
     public static function empty(PhpNode $expr): PhpNode
     {
         return new PhpNode\Expr\Empty_($expr);
@@ -94,7 +119,7 @@ class PHP
     public static function if(PhpNode $cond, array $yes, array $no = null): PhpNode
     {
         if ($no) {
-            return new PhpNode\Stmt\If_($cond, ['stmts' => $yes, 'else' => $no]);
+            return new PhpNode\Stmt\If_($cond, ['stmts' => $yes, 'else' => new PhpNode\Stmt\Else_($no)]);
         }
         return new PhpNode\Stmt\If_($cond, ['stmts' => $yes]);
     }
@@ -180,7 +205,7 @@ class PHP
 
     public static function null(): PhpNode
     {
-        return new PhpNode\Expr\ConstFetch(self::name('null'));
+        return self::constFetch('null');
     }
 
     public static function or(PhpNode $left, PhpNode $right): PhpNode
@@ -216,8 +241,12 @@ class PHP
             return self::int($item);
         } elseif (is_float($item)) {
             return self::float($item);
+        } elseif ($item === true) {
+            return self::constFetch('true');
+        } elseif ($item === false) {
+            return self::constFetch('false');
         }
-        var_dump($item);
+        throw new \LogicException("Not implemented: scalar for $item (" . gettype($item) . ")");
     }
 
     public static function staticCall(string $class, string $func, PhpNode ...$params): PhpNode

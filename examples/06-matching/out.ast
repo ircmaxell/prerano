@@ -1,0 +1,307 @@
+Package Prerano::Examples::Matching
+  Stmt_Function
+    name:
+      Name
+        parts [
+          length
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(input)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  any
+                ]
+        default()
+    ]
+    body [
+      Expr_Match
+        cond:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  input
+                ]
+        entries [
+          Expr_MatchEntry
+            cond:
+              Expr_IdentifierReference
+                name:
+                  Name
+                    parts [
+                      string
+                    ]
+            stmts [
+              Expr_FuncCall
+                name:
+                  Expr_IdentifierReference
+                    name:
+                      Name_Qualified
+                        parts [
+                          php
+                          strlen
+                        ]
+                args [
+                  Arg
+                    value:
+                      Expr_Variable
+                        name:
+                          Name
+                            parts [
+                              input
+                            ]
+                    name()
+                ]
+            ]
+          Expr_MatchEntry
+            cond:
+              Expr_IdentifierReference
+                name:
+                  Name
+                    parts [
+                      array
+                    ]
+            stmts [
+              Expr_FuncCall
+                name:
+                  Expr_IdentifierReference
+                    name:
+                      Name_Qualified
+                        parts [
+                          php
+                          count
+                        ]
+                args [
+                  Arg
+                    value:
+                      Expr_Variable
+                        name:
+                          Name
+                            parts [
+                              input
+                            ]
+                    name()
+                ]
+            ]
+          Expr_MatchEntry
+            cond:
+              Expr_IdentifierReference
+                name:
+                  Name
+                    parts [
+                      int
+                    ]
+            stmts [
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      input
+                    ]
+            ]
+          Expr_MatchEntry
+            cond()
+            stmts [
+              Scalar_LNumber
+                value(0)
+            ]
+        ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          foo
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(input)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+    ]
+    body [
+      Expr_Match
+        cond:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  input
+                ]
+        entries [
+          Expr_MatchEntry
+            cond:
+              Scalar_LNumber
+                value(0)
+            stmts [
+              Scalar_LNumber
+                value(1)
+            ]
+          Expr_MatchEntry
+            cond:
+              Scalar_LNumber
+                value(1)
+            stmts [
+              Scalar_LNumber
+                value(2)
+            ]
+          Expr_MatchEntry
+            cond()
+            stmts [
+              Scalar_LNumber
+                value(3)
+            ]
+        ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          isEven
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              bool
+            ]
+    parameters [
+      Stmt_Parameter
+        name(i)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+    ]
+    body [
+      Expr_BinaryOp_Equals
+        left:
+          Expr_BinaryOp_Mod
+            left:
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      i
+                    ]
+            right:
+              Scalar_LNumber
+                value(2)
+        right:
+          Scalar_LNumber
+            value(0)
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          mod2
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(input)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+    ]
+    body [
+      Expr_Match
+        cond:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  input
+                ]
+        entries [
+          Expr_MatchEntry
+            cond:
+              Expr_FuncCall
+                name:
+                  Expr_IdentifierReference
+                    name:
+                      Name
+                        parts [
+                          isEven
+                        ]
+                args [
+                  Arg
+                    value:
+                      Expr_Variable
+                        name:
+                          Name
+                            parts [
+                              input
+                            ]
+                    name()
+                ]
+            stmts [
+              Scalar_LNumber
+                value(0)
+            ]
+          Expr_MatchEntry
+            cond:
+              Expr_BinaryOp_Equals
+                left:
+                  Expr_Variable
+                    name:
+                      Name
+                        parts [
+                          input
+                        ]
+                right:
+                  Scalar_LNumber
+                    value(1)
+            stmts [
+              Scalar_LNumber
+                value(0)
+            ]
+          Expr_MatchEntry
+            cond()
+            stmts [
+              Scalar_LNumber
+                value(1)
+            ]
+        ]
+    ]

@@ -1,20 +1,24 @@
 %pure_parser
 %expect 0
 
-%left '+'
+%left T_EQUALS
+%left '+' '-'
+%left '*' '/' '%'
 %left '|' '&'
 %nonassoc '(' ')'
-%left '*' '?'
+%left '?'
 %right '<' '>'
+
 %left ':'
 %left ','
 %right T_SKINNY_ARROW
 %right T_TYPE
 %right T_FUNCTION
 %right T_ON
-%right T_IS
+%left T_IS
 %right T_ELSE
 %left T_SCOPE_OPERATOR
+%left ';'
 
 
 
@@ -31,6 +35,7 @@
 %token T_SCOPE_OPERATOR
 %token T_MATCH
 %token T_ELSE
+%token T_EQUALS
 
 %%
 
@@ -53,8 +58,8 @@ namespace_name_parts:
 ;
 
 statement_list:
-      statement_list terminated_statement  { push($1, $2); }
-    | /*empty*/                 { init(); }
+      statement_list terminated_statement   { push($1, $2); }
+    | /*empty*/                             { init(); }
 ;
 
 top_statement:
@@ -154,14 +159,24 @@ parameter:
 ;
 
 expr:
-      scalar                                    { $$ = $1; }
-    | '{' expr '}'                              { $$ = $2; }  
+      binary_expr                               { $$ = $1; }
+    | expr '(' argument_list ')'                { $$ = Node\Expr\FuncCall[$1, $3]; }
+    | expr T_IS type_expr                       { $$ = Node\Expr\Is[$1, $3]; }
+    | T_MATCH '(' expr ')' '{' match_list '}'   { $$ = Node\Expr\Match[$3, $6]; }
+    | '(' expr ')'                              { $$ = $2; }  
     | identifier                                { $$ = Node\Expr\IdentifierReference[$1]; }
     | '$' identifier                            { $$ = Node\Expr\Variable[$2]; }
-    | expr '+' expr                             { $$ = Node\Expr\BinaryOp\Plus[$1, $3]; }
-    | expr '(' argument_list ')'                { $$ = Node\Expr\FuncCall[$1, $3]; }
-    | '*' expr                                  { $$ = Node\Expr\PointerDereference[$2]; }
-    | expr T_IS type_expr                       { $$ = Node\Expr\Is[$1, $3]; }
+    | scalar                                    { $$ = $1; }
+    
+;
+
+binary_expr:
+      expr '+' expr                             { $$ = Node\Expr\BinaryOp\Plus[$1, $3]; }
+    | expr '-' expr                             { $$ = Node\Expr\BinaryOp\Minus[$1, $3]; }
+    | expr '/' expr                             { $$ = Node\Expr\BinaryOp\Div[$1, $3]; }
+    | expr '*' expr                             { $$ = Node\Expr\BinaryOp\Mul[$1, $3]; }
+    | expr '%' expr                             { $$ = Node\Expr\BinaryOp\Mod[$1, $3]; }
+    | expr T_EQUALS expr                        { $$ = Node\Expr\BinaryOp\Equals[$1, $3]; }
 ;
 
 
@@ -183,6 +198,23 @@ non_empty_argument_list:
 argument:
       identifier ':' expr   { $$ = Node\Arg[$3, $1]; }
     | expr                  { $$ = Node\Arg[$1, null]; }
+;
+
+match_list:
+      match_list match_entry  { push($1, $2); }
+    | /* empty */             { init(); }
+;
+
+match_entry:
+      non_empty_match_item_list ':' expr ';'                { $$ = Node\Expr\MatchEntry[$1, [$3]]; }
+    | non_empty_match_item_list ':' '{' statement_list '}'  { $$ = Node\Expr\MatchEntry[$1, $4]; }
+    | T_ELSE ':' expr ';'                                   { $$ = Node\Expr\MatchEntry[null, [$3]]; }
+    | T_ELSE ':' '{' statement_list '}'                     { $$ = Node\Expr\MatchEntry[null, $4]; }
+;
+
+non_empty_match_item_list: 
+      non_empty_match_item_list ',' expr    { $$ = Node\Expr\BinaryOp\BooleanOr[$1, $3]; }
+    | expr                                  { $$ = $1; }
 ;
 
 %%

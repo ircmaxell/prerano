@@ -1,0 +1,27 @@
+package Prerano::Examples::Matching;
+
+
+public fn length(any $input) int = match($input) {
+    string: php::strlen($input);
+    array: {
+        php::count($input);
+    }
+    int: $input;
+    else: 0;
+};
+
+public fn foo(int $input) int = match($input) {
+    0: 1;
+    1: 2;
+    else: 3;  
+};
+
+fn isEven(int $i) bool {
+    $i % 2 == 0;
+}
+
+public fn mod2(int $input) int = match($input) {
+    isEven($input): 0;
+    $input == 1: 0;
+    else: 1;
+};

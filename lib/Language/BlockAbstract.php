@@ -44,6 +44,20 @@ abstract class BlockAbstract implements Block
         return $this->outbound;
     }
 
+    public function getNextBlock(string $name): Block
+    {
+        if (!isset($this->outbound[$name])) {
+            throw new \InvalidArgumentException("Unknown next block $name");
+        }
+        return $this->outbound[$name];
+    }
+
+
+    public function hasNextBlock(string $name): bool
+    {
+        return isset($this->outbound[$name]);
+    }
+
     public function appendNode(Node ...$nodes)
     {
         foreach ($nodes as $node) {

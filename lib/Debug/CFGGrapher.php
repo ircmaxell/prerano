@@ -79,7 +79,7 @@ class CFGGrapher
     {
         $blockId = $current->getId();
         if (isset(self::$blockMap[$blockId])) {
-            return $blockMap[$blockId];
+            return self::$blockMap[$blockId];
         }
         self::$blockMap[$blockId] = $parent = GVNode::create(self::id(), 'Block ' . $blockId);
         $graph->setNode($parent);
@@ -91,7 +91,7 @@ class CFGGrapher
         }
         foreach ($current->getNextBlocks() as $reason => $block) {
             $node = self::convertBlock($graph, $block);
-            $graph->link(GVEdge::create(self::$blockMap[$blockId], $node)->setLabel($reason));
+            $graph->link(GVEdge::create($parent, $node)->setLabel($reason));
         }
         return self::$blockMap[$blockId];
     }
@@ -105,6 +105,8 @@ class CFGGrapher
                 $result .= "\n$name: (" . self::dumpVariable(...$subNode) . ')';
             } elseif ($subNode instanceof Variable) {
                 $result .= "\n$name: " . self::dumpVariable($subNode);
+            } elseif ($subNode instanceof Type) {
+                $result .= "\n$name: TYPE(" . $subNode->toString() . ")";
             } elseif ($subNode !== null) {
                 var_dump($subNode);
                 throw new \LogicException("Unknown subnode type: " . gettype($subNode));

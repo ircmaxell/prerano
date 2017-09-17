@@ -5,10 +5,10 @@ namespace Prerano\CFG\Node\Expr;
 use Prerano\CFG\Node\Expr;
 use Prerano\Language\Variable;
 
-class Match extends Expr
+class Assign extends Expr
 {
-    public $cond;
-    public $cases;
+    public $var;
+    public $expr;
 
     /**
      * Constructs an assignment node.
@@ -17,21 +17,15 @@ class Match extends Expr
      * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Variable $cond, array $cases, Variable $result, array $attributes = array())
+    public function __construct(Variable $var, Variable $expr, array $attributes = array())
     {
         parent::__construct($attributes);
-        $this->cond = $cond;
-        $this->result = $result;
-        $this->setCases(...$cases);
+        $this->var = $var;
+        $this->expr = $expr;
     }
 
     public function getSubNodeNames(): array
     {
-        return array('cond', 'cases', 'result');
-    }
-
-    private function setCases(MatchCase ...$cases)
-    {
-        $this->cases = $cases;
+        return array('var', 'expr');
     }
 }

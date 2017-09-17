@@ -4,12 +4,13 @@ namespace Prerano\CFG\Node\Expr;
 
 use Prerano\CFG\Node\Expr;
 use Prerano\Language\Variable;
+use Prerano\Language\Type;
 
-class MatchCase extends Expr
+class Is extends Expr
 {
     public $cond;
+    public $type;
     public $result;
-    public $id;
 
     /**
      * Constructs an assignment node.
@@ -18,16 +19,16 @@ class MatchCase extends Expr
      * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Variable $cond, int $id, Variable $result, array $attributes = array())
+    public function __construct(Variable $cond, Type $type, Variable $result, array $attributes = array())
     {
         parent::__construct($attributes);
         $this->cond = $cond;
+        $this->type = $type;
         $this->result = $result;
-        $this->id = $id;
     }
 
     public function getSubNodeNames(): array
     {
-        return array('cond', 'cases', 'result');
+        return array('cond', 'type', 'result');
     }
 }

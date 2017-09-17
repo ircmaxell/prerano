@@ -82,11 +82,41 @@ class Generator
                 $var = $this->generateNode($node->var, $block, Block::MODE_WO);
                 $block->write($var, $expr);
                 return $expr;
+            case 'Expr_BinaryOp_Div':
+                $left = $this->generateNode($node->left, $block, Block::MODE_RO);
+                $right = $this->generateNode($node->right, $block, Block::MODE_RO);
+                $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
+                $block->appendNode(new Node\Expr\BinaryOp\Div($left, $right, $result));
+                return $result;
+            case 'Expr_BinaryOp_Equals':
+                $left = $this->generateNode($node->left, $block, Block::MODE_RO);
+                $right = $this->generateNode($node->right, $block, Block::MODE_RO);
+                $result = new Variable\Temp(new Type(Type::TYPE_REFERENCE, 'bool'));
+                $block->appendNode(new Node\Expr\BinaryOp\Equals($left, $right, $result));
+                return $result;
+            case 'Expr_BinaryOp_Mod':
+                $left = $this->generateNode($node->left, $block, Block::MODE_RO);
+                $right = $this->generateNode($node->right, $block, Block::MODE_RO);
+                $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
+                $block->appendNode(new Node\Expr\BinaryOp\Mod($left, $right, $result));
+                return $result;
+            case 'Expr_BinaryOp_Mul':
+                $left = $this->generateNode($node->left, $block, Block::MODE_RO);
+                $right = $this->generateNode($node->right, $block, Block::MODE_RO);
+                $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
+                $block->appendNode(new Node\Expr\BinaryOp\Mul($left, $right, $result));
+                return $result;
             case 'Expr_BinaryOp_Plus':
                 $left = $this->generateNode($node->left, $block, Block::MODE_RO);
                 $right = $this->generateNode($node->right, $block, Block::MODE_RO);
                 $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
                 $block->appendNode(new Node\Expr\BinaryOp\Plus($left, $right, $result));
+                return $result;
+            case 'Expr_BinaryOp_Sub':
+                $left = $this->generateNode($node->left, $block, Block::MODE_RO);
+                $right = $this->generateNode($node->right, $block, Block::MODE_RO);
+                $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
+                $block->appendNode(new Node\Expr\BinaryOp\Sub($left, $right, $result));
                 return $result;
             case 'Expr_Block':
                 $newBlock = new Block\Simple;
@@ -120,41 +150,56 @@ class Generator
                 $else->write($result);
                 $block = $resultBlock;
                 return $result;
+            case 'Expr_Is':
+                $cond = $this->generateNode($node->cond, $block, Block::MODE_RO);
+                $type = $this->generateType($node->type);
+                $result = new Variable\Temp(new Type(Type::TYPE_REFERENCE, 'bool'));
+                $block->write($result);
+                $block->appendNode(new Node\Expr\Is($cond, $type, $result));
+                return $result;
             case 'Expr_Match':
                 $cond = $this->generateNode($node->cond, $block, Block::MODE_RO);
-                $i = 0;
-                $cases = [];
-                $results = [];
                 $nextBlock = new Block\Simple;
+                $results = [];
                 foreach ($node->entries as $entry) {
-                    $key = $i++;
-
-                    if ($entry instanceof AST\Stmt\Match\Entry) {
-                        $exprs = [];
-                        foreach ($entry->cond as $condition) {
-                            $exprs[] = $this->generateNode($condition, $block);
-                        }
-                        if (count($exprs !== 1)) {
-                            $expr = new Variable\Phi(...$exprs);
-                        } else {
-                            $expr = $exprs[0];
-                        }
-                    } elseif ($entry instanceof AST\Stmt\Match\Default_) {
-                        $expr = new Variable\IdentifierReference('any');
+                    if (is_null($entry->cond)) {
+                        list($result, $endBlock) = $this->generate($entry->stmts, $block);
+                        $results[] = new Variable\Phi\Entry($endBlock, $result);
+                        $endBlock->addOutboundBlock('*', $nextBlock);
+                        continue;
+                    } elseif ($entry->cond instanceof AST\Expr\IdentifierReference) {
+                        // generate IS condition
+                        $type = (new Type(Type::TYPE_REFERENCE, $entry->cond->name->toString()));
+                        $var = new Variable\Temp(new Type(Type::TYPE_REFERENCE, 'bool'));
+                        $block->write($var);
+                        $block->appendNode(new Node\Expr\Is($cond, $type, $var));
+                    } elseif ($entry->cond instanceof AST\Scalar) {
+                        $tmp = $this->generateNode($entry->cond, $block, Block::MODE_RO);
+                        $var = new Variable\Temp(new Type(Type::TYPE_REFERENCE, 'bool'));
+                        $block->appendNode(new Node\Expr\BinaryOp\Equals($cond, $tmp, $var));
+                    } elseif ($entry->cond instanceof AST\Expr) {
+                        $var = $this->generateNode($entry->cond, $block, Block::MODE_RO);
                     } else {
-                        throw new \Logic("Unknown match clause found");
+                        throw new \LogicException("No idea how to implement: " . $entry->cond->getName());
                     }
-                    $outBlock = new Block\Simple;
-                    list($result, $endBlock) = $this->generate($entry->stmts, $outBlock);
-                    $block->addOutboundBlock('match_' . $key, $outBlock);
+                    $if = new Block\Simple;
+                    $block->addOutboundBlock('if', $if);
+                    list($result, $endBlock) = $this->generate($entry->stmts, $if);
+                    $results[] = new Variable\Phi\Entry($endBlock, $result);
                     $endBlock->addOutboundBlock('*', $nextBlock);
-                    $cases[] = new Node\Expr\MatchCase($expr, $key, $result);
-                    $results[] = $result;
+                    $tmp = new Block\Simple;
+                    $block->addOutboundBlock('else', $tmp);
+                    $block->appendNode(new Node\Expr\If_($var, new Variable\Temp(new Type(Type::UNKNOWN))));
+                    $block = $tmp;
                 }
-                $result = new Variable\Phi(...$results);
-                $block->appendNode(new Node\Expr\Match($cond, $cases, $result));
                 $block = $nextBlock;
-                return $result;
+                if (count($results) === 0) {
+                    throw new \RuntimeException("Match expressions must have at least one case");
+                } elseif (count($results) === 1) {
+                    return $results[0]->var;
+                }
+
+                return new Variable\Phi(...$results);
             case 'Expr_PointerDereference':
                 $expr = $this->generateNode($node->expr, $block, Block::MODE_RO);
                 $isPtr = $expr->getDeclaredType()->type === Type::POINTER;
@@ -163,12 +208,19 @@ class Generator
                 return $result;
             case 'Expr_Variable':
                 if (is_string($node->name)) {
-                    return $block->namedVariable($node->name, $mode);
+                    $name = $node->name;
                 } elseif ($node->name instanceof AST\Name) {
-                    return $block->namedVariable($node->name->toString(), $mode);
+                    $name = $node->name->toString();
+                } else {
+                    throw new \LogicException("Not implemented yet for other variable names");
+                }
+                if ($mode === Block::MODE_RO) {
+                    return $block->read($name);
                 }
                 var_dump($node);
-                throw new LogicException("Expression based variables are not supported yet");
+
+                throw new LogicException("Writing variables not implemented as type is unknown");
+                return $block->write(new Variable\Named($name));
             case 'Scalar_LNumber':
                 return $block->write(new Variable\Literal($node->value));
             default:
@@ -185,7 +237,6 @@ class Generator
             $parameters[] = $block->write(new Variable\Parameter($param->name, $i++, $this->generateType($param->type)));
         }
         $returnType = $this->generateType($function->returnType);
-        
         list($result, $endBlock) = $this->generate($function->body, $block);
         return new Function_($parameters, $returnType, $block, $result);
     }

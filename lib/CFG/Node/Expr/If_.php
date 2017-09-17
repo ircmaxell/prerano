@@ -3,13 +3,12 @@
 namespace Prerano\CFG\Node\Expr;
 
 use Prerano\CFG\Node\Expr;
-use Prerano\CFG\Variable;
+use Prerano\Language\Variable;
 
 class If_ extends Expr
 {
     public $cond;
-    public $if;
-    public $else;
+    public $result;
 
     /**
      * Constructs an assignment node.
@@ -18,14 +17,15 @@ class If_ extends Expr
      * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Variable $cond, array $attributes = array())
+    public function __construct(Variable $cond, Variable $result, array $attributes = array())
     {
         parent::__construct($attributes);
         $this->cond = $cond;
+        $this->result = $result;
     }
 
     public function getSubNodeNames(): array
     {
-        return array('cond');
+        return array('cond', 'result');
     }
 }

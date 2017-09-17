@@ -17,6 +17,7 @@ class Lexer
         'type' => Tokens::T_TYPE,
         '::' => Tokens::T_SCOPE_OPERATOR,
         '->' => Tokens::T_SKINNY_ARROW,
+        '==' => Tokens::T_EQUALS,
         'fn' => Tokens::T_FUNCTION,
         'is' => Tokens::T_IS,
         'on' => Tokens::T_ON,
@@ -140,7 +141,12 @@ class Lexer
     protected function getCatchablePatterns()
     {
         $baseTokens = array_map(function ($string) {
-            return preg_quote($string, '/');
+            $str = preg_quote($string, '/');
+            if (ctype_alpha($str)) {
+                // enforce word boundary on either side to prevent partial identifier matches
+                $str = '(?<!\w)' . $str . '(?!\w)';
+            }
+            return $str;
         }, array_keys(self::TOKEN_MAP));
         return array_merge($baseTokens, [
             '[a-zA-Z_][a-zA-Z0-9_]*', // identifier

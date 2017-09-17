@@ -73,6 +73,8 @@ class CFGDumper
                         $result .= "                $name: " . self::dumpVariable($node->$name) . "\n";
                     } elseif ($subNode instanceof Node\Expr\MatchCase) {
                         $result .= "                match_{$subNode->id} (" . self::dumpVariable($subNode->cond) . ")\n";
+                    } elseif ($subNode instanceof Type) {
+                        $result .= "                $name: TYPE(" . self::dumpType($subNode) . ")\n";
                     } else {
                         var_dump($subNode);
                         throw new \LogicException("Nodes can only have variables as children for node $name: " . $node->getName());
@@ -99,7 +101,7 @@ class CFGDumper
             } elseif ($variable instanceof Variable\Literal) {
                 $result .= ' = ' . $variable->value;
             } elseif ($variable instanceof Variable\Phi) {
-                $result .= '{' . implode(', ', array_map(self::class . '::dumpVariable', $variable->parents)) . '}';
+                $result .= '{' . self::dumpPhiNodes(...$variable->parents) . '}';
             }
         } elseif (is_array($variable)) {
             $result .= '[';
@@ -109,22 +111,25 @@ class CFGDumper
                 $sep = ', ';
             }
             $result .= ']';
+        } else {
+            throw new \LogicException("Unknown variable type : " . gettype($variable));
         }
         return $result;
     }
 
     public static function dumpType(Type $type): string
     {
-        switch ($type->type) {
-            case Type::INT:
-                return 'int';
-            case Type::STRING:
-                return 'string';
-            case Type::UNKNOWN:
-                return 'unknown';
-            case Type::UNION:
-                return 'union(' . implode(', ', array_map(self::class . '::dumpType', $type->subTypes)) . ')';
+        return $type->toString();
+    }
+
+    public static function dumpPhiNodes(Variable\Phi\Entry ...$entries): string
+    {
+        $result = '';
+        $sep = '';
+        foreach ($entries as $entry) {
+            $result .= $sep . 'from #' . $entry->block->getId() . ': ' . self::dumpVariable($entry->var) . '';
+            $sep = ', ';
         }
-        throw new \LogicException("Type not implemented: {$type->type}");
+        return $result;
     }
 }

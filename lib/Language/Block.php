@@ -20,6 +20,9 @@ interface Block
     public function getNodes(): array;
     public function getNextBlocks(): array;
 
+    public function getNextBlock(string $name): Block;
+    public function hasNextBlock(string $name): bool;
+
     public function write(Variable $variable, Variable $value = null): Variable;
 
     public function read(string $name): Variable;

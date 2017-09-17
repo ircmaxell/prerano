@@ -17,10 +17,12 @@ class PHP
     public function __construct(PrettyPrinterAbstract $printer = null)
     {
         $this->printer = $printer ?: new Standard;
+        $this->resolver = new Utility\PhiResolver;
     }
 
     public function compile(Package $package): string
     {
+        $this->resolver->resolve($package);
         $result = a(
             ...$this->compileMetadata($package),
             ...[]

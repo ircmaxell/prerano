@@ -44,11 +44,12 @@ class PublicFunctions
             $results[] = PHP::if(
                 PHP::not(TypeCheck::compileExternalCheck(PHP::var($parameter->name), $parameter->getDeclaredType())),
                 [
-                    PHP::throw("TypeException", "Function {$name}() expects parameter {$key} to be " . $parameter->getDeclaredType()->toString())
+                    PHP::throw("\TypeException", "Function {$name}() expects parameter {$key} to be " . $parameter->getDeclaredType()->toString())
                 ]
             );
         }
-        return $results;;
+        return $results;
+        ;
     }
 
     protected static function postConditions(Function_ $function): array

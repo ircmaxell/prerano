@@ -9,16 +9,9 @@ class Phi extends Temp
 {
     public $parents = [];
 
-    public function __construct(Variable ...$parents)
+    public function __construct(Phi\Entry ...$parents)
     {
-        $this->addParent(...$parents);
+        $this->parents = $parents;
         parent::__construct(new Type(Type::UNKNOWN));
-    }
-
-    public function addParent(Variable ...$variable)
-    {
-        foreach ($variable as $parent) {
-            $this->parents[$parent->getId()] = $parent;
-        }
     }
 }

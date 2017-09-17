@@ -7,22 +7,23 @@ use RuntimeException;
 
 class Type
 {
-    const UNKNOWN        = 0b00000000000000;
+    const UNKNOWN        = 0b000000000000000;
 
-    const NONE           = 0b00000000000001;
-    const NULL           = 0b00000000000010;
-    const INT            = 0b00000000000100;
-    const FLOAT          = 0b00000000001000;
-    const STRING         = 0b00000000010000;
-    const TRUE           = 0b00000000100000;
-    const FALSE          = 0b00000001000000;
-    const ARRAY          = 0b00000010000000;
-    const OBJECT         = 0b00000100000000;
-    const UNION          = 0b00001000000000;
-    const INTERSECTION   = 0b00010000000000;
-    const POINTER        = 0b00100000000000;
-    const TYPE_REFERENCE = 0b01000000000000;
-    const CALLABLE       = 0b10000000000000;
+    const NONE           = 0b000000000000001;
+    const NULL           = 0b000000000000010;
+    const INT            = 0b000000000000100;
+    const FLOAT          = 0b000000000001000;
+    const STRING         = 0b000000000010000;
+    const TRUE           = 0b000000000100000;
+    const FALSE          = 0b000000001000000;
+    const ARRAY          = 0b000000010000000;
+    const OBJECT         = 0b000000100000000;
+    const UNION          = 0b000001000000000;
+    const INTERSECTION   = 0b000010000000000;
+    const POINTER        = 0b000100000000000;
+    const TYPE_REFERENCE = 0b001000000000000;
+    const CALLABLE       = 0b010000000000000;
+    const ANY            = 0b100000000000000;
 
     const COMPLEX_TYPE  = self::UNION | self::INTERSECTION;
     const SIMPLE_TYPE = ~(self::ARRAY | self::COMPLEX_TYPE | self::POINTER | self::TYPE_REFERENCE | self::CALLABLE);
@@ -37,7 +38,9 @@ class Type
         self::TRUE     => 'true',
         self::FALSE    => 'false',
         self::OBJECT   => 'object',
-        self::CALLABLE => 'fn'
+        self::CALLABLE => 'fn',
+        self::ARRAY    => 'array',
+        self::ANY      => 'any',
     ];
 
     protected $type = self::UNKNOWN;
@@ -52,15 +55,19 @@ class Type
 
         $this->normalizeReferences();
 
-        if (($this->type & self::COMPLEX_TYPE) && count($subTypes) < 2) {
+        if ($this->type & (self::POINTER | self::ARRAY) && count($subTypes) === 0) {
+            $this->subTypes = [new Type(Type::ANY)];
+        }
+
+        if (($this->type & self::COMPLEX_TYPE) && count($this->subTypes) < 2) {
             throw new InvalidArgumentException("Complex types require at least 2 types");
-        } elseif ($this->type & self::SIMPLE_TYPE && count($subTypes) !== 0) {
+        } elseif ($this->type & self::SIMPLE_TYPE && count($this->subTypes) !== 0) {
             throw new InvalidArgumentException("Sub Types are not supported for simple types");
-        } elseif ($this->type & (self::POINTER | self::ARRAY) && count($subTypes) !== 1) {
+        } elseif ($this->type & (self::POINTER | self::ARRAY) && count($this->subTypes) !== 1) {
             throw new InvalidArgumentException("Type array must specify child type");
-        } elseif (!$this->validate($type)) {
+        } elseif (!$this->validate($this->type)) {
             throw new InvalidArgumentException("Type value must specify exactly one type");
-        } elseif ($this->type & self::TYPE_REFERENCE && (!is_string($value) || empty($value))) {
+        } elseif ($this->type & self::TYPE_REFERENCE && (!is_string($this->value) || empty($this->value))) {
             throw new InvalidArgumentException("Type reference must specify the referenced type");
         }
     }
@@ -74,6 +81,13 @@ class Type
         if ($key !== false) {
             $this->type = $key;
             $this->value = null;
+        } elseif ($this->value === 'bool') {
+            $this->type = self::UNION;
+            $this->value = null;
+            $this->subTypes = [
+                new Type(Type::TRUE),
+                new Type(Type::FALSE),
+            ];
         }
     }
 
@@ -117,7 +131,7 @@ class Type
 
     protected function validate(int $type): bool
     {
-        return $type === self::UNKNOWN || $type === ($type & (-1 * $type));
+        return $type === self::UNKNOWN || $type === self::ANY || $type === ($type & (-1 * $type));
     }
 
     /**

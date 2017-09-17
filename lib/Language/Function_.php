@@ -22,6 +22,11 @@ class Function_
         return $this->$name;
     }
 
+    public function setResult(Variable $result)
+    {
+        $this->result = $result;
+    }
+
     public function getSignature(): Type
     {
         return new Type(
@@ -33,8 +38,6 @@ class Function_
             ...[$this->returnType]
         );
     }
-
-
 
     private function setParameters(Variable\Parameter ...$parameters)
     {
