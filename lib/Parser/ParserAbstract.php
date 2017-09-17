@@ -122,7 +122,7 @@ abstract class ParserAbstract
      * @return Node[]|null Array of statements (or null if the 'throwOnError' option is disabled and the parser was
      *                     unable to recover from an error).
      */
-    public function parse($code)
+    public function parse(string $code, string $filename)
     {
 
         // Initialize the lexer
@@ -173,6 +173,7 @@ abstract class ParserAbstract
                             'startLine' => $token['startLine'],
                             'linePos' => $token['linePos'],
                             'filePos' => $token['filePos'],
+                            'file'    => $filename,
                         ];
                         $endAttributes = [
                             'endLine' => $token['endLine'],

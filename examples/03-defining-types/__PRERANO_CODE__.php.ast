@@ -49,7 +49,7 @@ Package Prerano::Examples::DefiningTypes
             ]
         type:
           Expr_Type_Value
-            value()
+            value(0)
       Stmt_Type
         name:
           Name
@@ -58,5 +58,5 @@ Package Prerano::Examples::DefiningTypes
             ]
         type:
           Expr_Type_Value
-            value()
+            value(1)
     ]
