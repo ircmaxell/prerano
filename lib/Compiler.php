@@ -18,7 +18,8 @@ class Compiler
         $this->generator = new CFG\Generator;
         $this->compiler = new Compiler\PHP;
         $this->scope = new Scope;
-        $this->engine = new Inference\Engine($scope);
+        $this->engine = new Inference\Engine($this->scope);
+        $this->addPHPPackage();
     }
 
     public function compile(string $file)
@@ -56,6 +57,23 @@ class Compiler
             $this->debugCFG($target . $name, $package);
             $php = $this->compiler->compile($package);
             file_put_contents($target . $name . '.php', $php);
+        }
+    }
+
+    protected function addPHPPackage()
+    {
+        $dir = __DIR__ . '/php';
+        $packages = [];
+        foreach (new \DirectoryIterator($dir) as $sub) {
+            if (!$sub->isFile() || $sub->getExtension() !== 'pr') {
+                continue;
+            }
+            $filename = $sub->getPathname();
+            $packages[] = $tmp = $this->compileFile($filename);
+        }
+        foreach ($packages as $package) {
+            $cfg = $this->generator->generatePackage($package);
+            $this->scope->addPackage($cfg);
         }
     }
 

@@ -109,7 +109,7 @@ class Type
         } elseif ($this->type & self::CALLABLE) {
             return 'fn(' . implode(',', array_map(function (Type $t) {
                 return $t->toString();
-            }, array_slice($this->subTypes, 0, -1))) . '):' . end($this->subTypes)->toString();
+            }, array_slice($this->subTypes, 0, -1))) . ')' . end($this->subTypes)->toString();
         } elseif ($this->type & self::POINTER) {
             return 'pointer<' . $this->subTypes[0]->toString() . '>';
         } elseif ($this->type & self::ARRAY) {
@@ -267,6 +267,10 @@ class Type
             if ($this->subTypes) {
                 return new self(self::ARRAY, null, $this->subTypes[0]->simplify());
             }
+            return $this;
+        }
+        if ($this->type === self::CALLABLE) {
+            // TODO
             return $this;
         }
         var_dump($this);

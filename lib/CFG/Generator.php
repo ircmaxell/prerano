@@ -262,6 +262,15 @@ class Generator
         return $result;
     }
 
+    protected function generateTypes(Ast\Expr\Type ...$types): array
+    {
+        $result = [];
+        foreach ($types as $type) {
+            $result[] = $this->generateType($type);
+        }
+        return $result;
+    }
+
     protected function generateType(AST\Expr\Type $type): Type
     {
         switch ($type->getName()) {
@@ -273,6 +282,8 @@ class Generator
                 return (new Type(Type::POINTER, null, $this->generateType($type->type)));
             case 'Expr_Type_Union':
                 return (new Type(Type::UNION, null, $this->generateType($type->left), $this->generateType($type->right)))->simplify();
+            case 'Expr_Type_Function':
+                return (new Type(Type::CALLABLE, null, ...$this->generateTypes(...$type->parameters), ...[$this->generateType($type->result)]))->simplify();
             case 'Expr_Type_Value':
                 if ($type->value instanceof AST\Scalar) {
                     $type->value = $type->value->value;

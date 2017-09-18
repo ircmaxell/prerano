@@ -9,6 +9,7 @@ abstract class BlockAbstract implements Block
     protected $variables = [];
     protected $names = [];
     protected $input = [];
+    protected $edges = [];
     
     protected $inbound = [];
     protected $outbound = [];
@@ -130,8 +131,20 @@ abstract class BlockAbstract implements Block
         $destId = $destination->getId();
         if (!isset($this->edges[$destId])) {
             $this->edges[$destId] = [];
+        } elseif ($this->edges[$destId][0]->getId() !== $source->getId() && !$destination instanceof Variable\Phi) {
+            throw new \LogicException("Non-Phi variable with multiple edges");
         }
         $this->edges[$destId][] = $source;
+    }
+
+    public function getVariables(): array
+    {
+        return $this->variables;
+    }
+
+    public function getEdges(): array
+    {
+        return $this->edges;
     }
 
     protected function addVariable(Variable $variable)

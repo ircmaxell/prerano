@@ -1,0 +1,3 @@
+package php;
+
+public type strlen = fn(string) int

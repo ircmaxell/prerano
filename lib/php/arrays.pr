@@ -1,0 +1,3 @@
+package php;
+
+public type count = fn(array) int

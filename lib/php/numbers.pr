@@ -1,0 +1,5 @@
+package php;
+
+public type intdiv = fn(int,int) int
+
+

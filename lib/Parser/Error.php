@@ -183,5 +183,8 @@ class Error extends \RuntimeException
         } else {
             $this->message .= ' on line ' . $this->getStartLine();
         }
+        if (isset($this->attributes['file'])) {
+            $this->message .= ' in file ' . $this->attributes['file'];
+        }
     }
 }

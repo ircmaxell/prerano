@@ -30,4 +30,34 @@ class Scope
         }
         return $this->packages[$name];
     }
+
+    public function lookup(string $name, string $fromName)
+    {
+        $parts = explode('::', $name);
+        $identifier = array_pop($parts);
+        $package = implode('::', $parts);
+
+        if (!isset($this->packages[$package])) {
+            return;
+        }
+
+        $flag = Language\Package::PUBLIC;
+        if ($package === $fromName) {
+            $flag = Language\Package::PRIVATE;
+        } elseif (strpos($fromName, $package . '::') === 0) {
+            $flag = Language\Package::PROTECTED;
+        }
+
+        for ($i = Language\Package::PUBLIC; $i <= $flag; $i++) {
+            if (isset($this->packageMap[$package][$i][$identifier])) {
+                return $this->packageMap[$package][$i][$identifier];
+            }
+        }
+    }
+
+    public function addSignatures(array $signatures)
+    {
+        var_dump($signatures);
+        die();
+    }
 }

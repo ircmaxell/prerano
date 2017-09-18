@@ -9,9 +9,13 @@ use Prerano\Language\Package;
 
 interface Rule
 {
-    public function beforePackage(Package $package);
-    public function beforeFunction(Function_ $function);
-    public function processBlock(Block $block);
-    public function afterFunction(Function_ $function);
-    public function afterPackage(Package $package);
+    const NORMAL        = 0b000001;
+    const SKIP_CHILDREN = 0b000010;
+    const RERUN         = 0b000100;
+
+    public function beforePackage(Package $package): int;
+    public function beforeFunction(string $name, Function_ $function): int;
+    public function processBlock(Block $block): int;
+    public function afterFunction(string $name, Function_ $function): int;
+    public function afterPackage(Package $package): int;
 }

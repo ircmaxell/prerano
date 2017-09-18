@@ -25,6 +25,11 @@ abstract class VariableAbstract implements Variable
         return $this->declaredType;
     }
 
+    public function setDeclaredType(Type $type = null)
+    {
+        $this->declaredType = $type;
+    }
+
     public function getInferredType(): Type
     {
         return $this->inferredType ?? $this->declaredType;

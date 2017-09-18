@@ -10,6 +10,7 @@ class FuncCall extends Expr
     public $name;
     public $args;
     public $result;
+    public $signature;
 
     /**
      * Constructs an assignment node.
