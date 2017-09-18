@@ -28,6 +28,12 @@ class Package
         self::PRIVATE => [],
     ];
 
+    protected $expressionFunctions = [
+        self::PUBLIC => [],
+        self::PROTECTED => [],
+        self::PRIVATE => [],
+    ];
+
     protected $name;
 
     public function __construct(string $name)
@@ -55,5 +61,14 @@ class Package
             throw new RuntimeException("Invalid function declaration for $name, symbol already defined");
         }
         $this->functions[$visibility][$name] = $function;
+    }
+
+    public function addExpressionFunctionDeclaration(Type $on, string $name, Function_ $function, int $visibility)
+    {
+        $this->addTypeDeclaration($on->toString() . '->' . $name, $function->getSignature(), $visibility);
+        if (isset($this->functions[$visibility][$name])) {
+            throw new RuntimeException("Invalid function declaration for $name, symbol already defined");
+        }
+        $this->expressionFunctions[$visibility][$name] = $function;
     }
 }

@@ -43,6 +43,14 @@ class Generator
                     $this->generateDeclarations($node->subTypes, $package);
                     $package->addTypeDeclaration($node->name->toString(), new Type(Type::UNION, null, ...$subTypes), $node->visibility);
                     break;
+                case 'Stmt_ExprFunction':
+                    $package->addExpressionFunctionDeclaration(
+                        $this->generateType($node->on),
+                        $node->name->toString(),
+                        $this->generateFunction($node),
+                        $node->visibility
+                    );
+                    break;
                 case 'Stmt_Function':
                     if ($node->name->toString() === '__main__' && $node->visibility !== Package::PRIVATE) {
                         throw new RuntimeException("__main__ functions **must** be private");
