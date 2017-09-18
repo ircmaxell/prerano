@@ -1,33 +1,16 @@
 Package Prerano::Examples::ExpressionFunctions
-  Stmt_Function
-    name:
-      Name
-        parts [
-          __main__
-        ]
-    returnType:
-      Expr_Type_Named
-        name:
-          Name
-            parts [
-              none
-            ]
-    parameters [
-    ]
-    body [
-    ]
   Stmt_ExprFunction
     on:
       Expr_Type_Named
         name:
           Name
             parts [
-              array
+              int
             ]
     name:
       Name
         parts [
-          length
+          next
         ]
     returnType:
       Expr_Type_Named
@@ -39,23 +22,50 @@ Package Prerano::Examples::ExpressionFunctions
     parameters [
     ]
     body [
-      Expr_FuncCall
-        name:
-          Expr_IdentifierReference
+      Expr_BinaryOp_Plus
+        left:
+          Expr_Variable
             name:
               Name
                 parts [
-                  count
+                  _
                 ]
-        args [
-          Arg
-            value:
-              Expr_Variable
-                name:
-                  Name
-                    parts [
-                      this
-                    ]
-            name()
+        right:
+          Scalar_LNumber
+            value(1)
+    ]
+  Stmt_ExprFunction
+    on:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    name:
+      Name
+        parts [
+          prev
         ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+    ]
+    body [
+      Expr_BinaryOp_Minus
+        left:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  _
+                ]
+        right:
+          Scalar_LNumber
+            value(1)
     ]

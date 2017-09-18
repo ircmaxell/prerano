@@ -15,6 +15,7 @@ class Scope
     const INIT_SYMBOL = "\xe2\x88\xab";
     const FROM_SEPARATOR = "::";
     const SEPERATOR = "\xdc\x83\xdc\x83";
+    const EXPRESSION_SEPARATOR = "\xe2\x86\x92";
 
     public static function join(string ...$parts): string
     {
@@ -42,6 +43,16 @@ class Scope
         $parts = explode(self::SEPERATOR, $scope);
         $prefix = explode('::', $package->name);
         return self::join(...$prefix, ...$parts);
+    }
+
+    public static function resolveExpressionLocal(Package $package, string $scope, Type $type): string
+    {
+        $parts = explode(self::SEPERATOR, $scope);
+        $end = array_pop($parts);
+        $end .= self::EXPRESSION_SEPARATOR . self::sanitize($type->toString());
+        $prefix = explode('::', $package->name);
+
+        return self::join(...$prefix, ...$parts, ...[$end]);
     }
 
     public static function resolveFunctionCall(Package $package, FuncCall $call, Variable ...$args): PhpNode
@@ -93,5 +104,30 @@ class Scope
             $result[] = self::variable($var);
         }
         return $result;
+    }
+
+    public static function sanitize(string $item): string
+    {
+        $from = [
+            '<',
+            '>',
+            '*',
+            '(',
+            ')',
+            '{',
+            '}',
+            ','
+        ];
+        $to = [
+            "\xe2\x89\xba",
+            "\xe2\x89\xbb",
+            "\xe2\x8b\x86",
+            "\xe2\x9d\xa8",
+            "\xe2\x9d\xa9",
+            "\xe2\x9d\xb4",
+            "\xe2\x9d\xb5",
+            "\xcc\xa6",
+        ];
+        return str_replace($from, $to, $item);
     }
 }

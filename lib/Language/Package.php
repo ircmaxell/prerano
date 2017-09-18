@@ -16,6 +16,12 @@ class Package
         self::PRIVATE => 'private',
     ];
 
+    const FIELDS = [
+        "types",
+        "functions",
+        "expressionFunctions",
+    ];
+
     protected $types = [
         self::PUBLIC => [],
         self::PROTECTED => [],
@@ -65,10 +71,41 @@ class Package
 
     public function addExpressionFunctionDeclaration(Type $on, string $name, Function_ $function, int $visibility)
     {
-        $this->addTypeDeclaration($on->toString() . '->' . $name, $function->getSignature(), $visibility);
-        if (isset($this->functions[$visibility][$name])) {
-            throw new RuntimeException("Invalid function declaration for $name, symbol already defined");
+        $onString = $on->toString();
+        $this->addTypeDeclaration($onString . '->' . $name, $function->getSignature(), $visibility);
+        $this->expressionFunctions[$visibility][$name][] = [$on, $function];
+    }
+
+    public function mergeWith(Package $other): Package
+    {
+        if ($this->name !== $other->name) {
+            throw new \RuntimeException("Atempting to merge unlike packages");
         }
-        $this->expressionFunctions[$visibility][$name] = $function;
+        $new = new static($this->name);
+        $this->addAllTo($new);
+        $other->addAllTo($new);
+        return $new;
+    }
+
+    protected function addAllTo(Package $other)
+    {
+        foreach ($this->types as $visibility => $typeMap) {
+            foreach ($typeMap as $name => $type) {
+                $other->addTypeDeclaration($name, $type, $visibility);
+            }
+        }
+        foreach ($this->functions as $visibility => $functionMap) {
+            foreach ($functionMap as $name => $function) {
+                // bypass addFunctionDeclaration since type is already extracted
+                $other->functions[$visibility][$name] = $function;
+            }
+        }
+        foreach ($this->expressionFunctions as $visibility => $functionMap) {
+            foreach ($functionMap as $name => $exprMap) {
+                foreach ($exprMap as $onSpec) {
+                    $other->expressionFunctions[$visibility][$name][] = $onSpec;
+                }
+            }
+        }
     }
 }

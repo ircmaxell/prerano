@@ -8,6 +8,8 @@ class Compiler
     protected $generator;
     protected $compiler;
     protected $debug;
+    protected $scope;
+    protected $engine;
 
     public function __construct(bool $debug = false)
     {
@@ -15,6 +17,8 @@ class Compiler
         $this->parser = new Parser\Parser(new Parser\Lexer);
         $this->generator = new CFG\Generator;
         $this->compiler = new Compiler\PHP;
+        $this->scope = new Scope;
+        $this->engine = new Inference\Engine($scope);
     }
 
     public function compile(string $file)
@@ -24,30 +28,35 @@ class Compiler
             $target = str_replace('.pr', '.php', $file);
         } elseif (is_dir($file)) {
             // compile all files
-            $package = null;
+            $packages = [];
             foreach (new \DirectoryIterator($file) as $sub) {
                 if (!$sub->isFile() || $sub->getExtension() !== 'pr') {
                     continue;
                 }
-                $subPackage = $this->compileFile($sub->getPathname());
-                if ($package) {
-                    $package = $package->merge($subPackage);
-                } else {
-                    $package = $subPackage;
-                }
+                $filename = $sub->getPathname();
+                $packages[] = $tmp = $this->compileFile($filename);
+                $this->debugAST($filename, $tmp);
             }
-            if (!$package) {
-                throw new \LogicException("No .pr files found in $file");
-            }
-            $target = $file . '/__PRERANO_CODE__.php';
+            $target = $file . '/';
         } else {
             throw new \LogicException("Unknown compilation target $file");
         }
-        $cfg = $this->generator->generatePackage($package);
-        $php = $this->compiler->compile($cfg);
-        file_put_contents($target, $php);
 
-        $this->debug($target, $package, $cfg);
+        $toCompile = [];
+        foreach ($packages as $package) {
+            $cfg = $this->generator->generatePackage($package);
+            $toCompile[] = $cfg->name;
+            $this->scope->addPackage($cfg);
+        }
+        $toCompile = array_unique($toCompile);
+
+        foreach ($toCompile as $name) {
+            $package = $this->scope->getPackage($name);
+            $this->engine->process($package);
+            $this->debugCFG($target . $name, $package);
+            $php = $this->compiler->compile($package);
+            file_put_contents($target . $name . '.php', $php);
+        }
     }
 
     protected function compileFile(string $file): Ast\Node\Stmt\Package
@@ -55,12 +64,19 @@ class Compiler
         return $this->parser->parse(file_get_contents($file), $file);
     }
 
-    protected function debug(string $target, Ast\Node\Stmt\Package $package, Language\Package $cfg)
+    protected function debugAST(string $target, Ast\Node\Stmt\Package $package)
     {
         if (!$this->debug) {
             return;
         }
         file_put_contents("$target.ast", Debug\ASTDumper::dump($package));
+    }
+
+    protected function debugCFG(string $target, Language\Package $cfg)
+    {
+        if (!$this->debug) {
+            return;
+        }
         file_put_contents("$target.cfg", Debug\CFGDumper::dumpPackage($cfg));
         Debug\CFGGrapher::graphPackage($cfg, "$target.png", 'png');
     }

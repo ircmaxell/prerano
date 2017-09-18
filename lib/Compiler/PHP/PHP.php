@@ -46,6 +46,11 @@ class PHP
         return new PhpNode\Expr\BinaryOp\Div($left, $right);
     }
 
+    public static function binaryOpMinus(PhpNode $left, PhpNode $right): PhpNode
+    {
+        return new PhpNode\Expr\BinaryOp\Minus($left, $right);
+    }
+    
     public static function binaryOpMod(PhpNode $left, PhpNode $right): PhpNode
     {
         return new PhpNode\Expr\BinaryOp\Mod($left, $right);
@@ -61,10 +66,7 @@ class PHP
         return new PhpNode\Expr\BinaryOp\Plus($left, $right);
     }
 
-    public static function binaryOpSub(PhpNode $left, PhpNode $right): PhpNode
-    {
-        return new PhpNode\Expr\BinaryOp\Sub($left, $right);
-    }
+    
 
     public static function classConst(string $name, PhpNode $value): PhpNode
     {

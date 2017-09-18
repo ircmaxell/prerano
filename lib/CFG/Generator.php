@@ -102,6 +102,12 @@ class Generator
                 $result = new Variable\Temp(new Type(Type::TYPE_REFERENCE, 'bool'));
                 $block->appendNode(new Node\Expr\BinaryOp\Equals($left, $right, $result));
                 return $result;
+            case 'Expr_BinaryOp_Minus':
+                $left = $this->generateNode($node->left, $block, Block::MODE_RO);
+                $right = $this->generateNode($node->right, $block, Block::MODE_RO);
+                $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
+                $block->appendNode(new Node\Expr\BinaryOp\Minus($left, $right, $result));
+                return $result;
             case 'Expr_BinaryOp_Mod':
                 $left = $this->generateNode($node->left, $block, Block::MODE_RO);
                 $right = $this->generateNode($node->right, $block, Block::MODE_RO);
@@ -119,12 +125,6 @@ class Generator
                 $right = $this->generateNode($node->right, $block, Block::MODE_RO);
                 $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
                 $block->appendNode(new Node\Expr\BinaryOp\Plus($left, $right, $result));
-                return $result;
-            case 'Expr_BinaryOp_Sub':
-                $left = $this->generateNode($node->left, $block, Block::MODE_RO);
-                $right = $this->generateNode($node->right, $block, Block::MODE_RO);
-                $result = new Variable\Temp($this->determineGeneratedBinaryOpType($left->getDeclaredType(), $right->getDeclaredType()));
-                $block->appendNode(new Node\Expr\BinaryOp\Sub($left, $right, $result));
                 return $result;
             case 'Expr_Block':
                 $newBlock = new Block\Simple;

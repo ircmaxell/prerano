@@ -172,8 +172,12 @@ Package Prerano::Examples::TypeChecks
           Expr_Type_Union
             left:
               Expr_Type_Value
-                value(0)
+                value:
+                  Scalar_LNumber
+                    value(0)
             right:
               Expr_Type_Value
-                value(1)
+                value:
+                  Scalar_LNumber
+                    value(1)
     ]

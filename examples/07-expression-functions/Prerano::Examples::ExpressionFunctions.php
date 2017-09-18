@@ -34,5 +34,15 @@ final class __PRERANO_CODE__
     {
         return $_91;
     }
+    public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int($_)
+    {
+        $_96 = $_ + 1;
+        return $_96;
+    }
+    public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃prev→int($_)
+    {
+        $_101 = $_ - 1;
+        return $_101;
+    }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃ExpressionFunctions܃܃∫();

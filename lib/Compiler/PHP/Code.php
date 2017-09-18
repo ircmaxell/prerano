@@ -27,7 +27,7 @@ class Code
                         ...self::properties($package),
                         ...[self::init($package)],
                         ...self::functions($package),
-
+                        ...self::expressionFunctions($package),
 
                         ...[]
                     ),
@@ -104,6 +104,15 @@ class Code
                         )
                     );
                     break;
+                case 'Expr_BinaryOp_Minus':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        PHP::binaryOpMinus(
+                            Scope::variable($node->left),
+                            Scope::variable($node->right)
+                        )
+                    );
+                    break;
                 case 'Expr_BinaryOp_Mod':
                     $return[] = PHP::assign(
                         Scope::variable($node->result),
@@ -131,15 +140,7 @@ class Code
                         )
                     );
                     break;
-                case 'Expr_BinaryOp_Sub':
-                    $return[] = PHP::assign(
-                        Scope::variable($node->result),
-                        PHP::binaryOpSub(
-                            Scope::variable($node->left),
-                            Scope::variable($node->right)
-                        )
-                    );
-                    break;
+                
                 case 'Expr_FuncCall':
                     $return[] = PHP::assign(
                         Scope::variable($node->result),
@@ -192,6 +193,24 @@ class Code
                     ...self::compileBlock($package, $func->body),
                     ...[PHP::return(Scope::variable($func->result))]
                 ));
+            }
+        }
+        return $result;
+    }
+
+    protected static function expressionFunctions(Package $package): array
+    {
+        $result = [];
+        foreach ($package->expressionFunctions as $visibility => $level1) {
+            foreach ($level1 as $name => $level2) {
+                foreach ($level2 as list($type, $function)) {
+                    $name = Scope::resolveExpressionLocal($package, $name, $type);
+                    $root = new Variable\Parameter("_", 0, $type);
+                    $result[] = PHP::classMethod($name, PHP::modifier('public'), self::params($root, ...$function->parameters), a(
+                        ...self::compileBlock($package, $function->body),
+                        ...[PHP::return(Scope::variable($function->result))]
+                    ));
+                }
             }
         }
         return $result;

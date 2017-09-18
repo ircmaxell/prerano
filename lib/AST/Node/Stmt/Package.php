@@ -29,12 +29,4 @@ class Package extends Node\Stmt
     {
         return array('name', 'stmts');
     }
-
-    public function merge(Package $other): Package
-    {
-        if ($this->name->toString() !== $other->name->toString()) {
-            throw new \RuntimneException("Attempting to merge different packages");
-        }
-        return new self($this->name, array_merge($this->stmts, $other->stmts), $this->attributes);
-    }
 }
