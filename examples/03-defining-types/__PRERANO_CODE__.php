@@ -3,9 +3,8 @@
 final class __PRERANO_METADATA__
 {
     const HEADERS = 'YTozOntzOjY6InB1YmxpYyI7YTowOnt9czo5OiJwcm90ZWN0ZWQiO2E6MDp7fXM6NzoicHJpdmF0ZSI7YTowOnt9fQ==';
-    const FUNCTIONS = 'YTozOntzOjY6InB1YmxpYyI7YTowOnt9czo5OiJwcm90ZWN0ZWQiO2E6MDp7fXM6NzoicHJpdmF0ZSI7YTowOnt9fQ==';
     private static $instance;
-    private $headers = null, $functions = null;
+    private $headers = null;
     public static function init()
     {
         if (!self::$instance) {
@@ -19,13 +18,6 @@ final class __PRERANO_METADATA__
             $this->headers = unserialize(base64_decode(self::HEADERS));
         }
         return $this->headers;
-    }
-    public function functions()
-    {
-        if (null === $this->functions) {
-            $this->functions = unserialize(base64_decode(self::FUNCTIONS));
-        }
-        return $this->functions;
     }
 }
 final class __PRERANO_CODE__

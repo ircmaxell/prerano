@@ -23,8 +23,7 @@ class Metadata
                     'stmts' => a(
                         ...self::properties($package),
                         ...[self::init($package)],
-                        ...[self::getHeadersFunction($package)],
-                        ...[self::getFunctionsFunction($package)]
+                        ...[self::getHeadersFunction($package)]
                     ),
                 ]
             )
@@ -47,28 +46,6 @@ class Metadata
                     ),
                     PHP::return(PHP::staticPropFetch('self', 'instance')),
                 ],
-            ]
-        );
-    }
-
-    protected static function getFunctionsFunction(Package $package): PhpNode
-    {
-        return new PhpNode\Stmt\ClassMethod(
-            'functions',
-            [
-                'flags' => PHP::modifier('public'),
-                'stmts' => a(
-                    PHP::if(
-                        PHP::identical(PHP::null(), PHP::propFetch(PHP::var('this'), 'functions')),
-                        a(
-                            PHP::assign(
-                                PHP::propFetch(PHP::var('this'), 'functions'),
-                                PHP::funcCall('unserialize', PHP::funcCall('base64_decode', PHP::classConstFetch('self', 'FUNCTIONS')))
-                            )
-                        )
-                    ),
-                    PHP::return(PHP::propFetch(PHP::var('this'), 'functions'))
-                ),
             ]
         );
     }
@@ -99,7 +76,6 @@ class Metadata
     {
         return a(
             PHP::classConst('HEADERS', self::functionHeaders($package)),
-            PHP::classConst('FUNCTIONS', self::functions($package)),
             new PhpNode\Stmt\Property(
                 PHP::modifier('private static'),
                 [
@@ -110,24 +86,10 @@ class Metadata
                 PHP::modifier('private'),
                 [
                     new PhpNode\Stmt\PropertyProperty('headers', PHP::null()),
-                    new PhpNode\Stmt\PropertyProperty('functions', PHP::null()),
                 ]
             )
         );
     }
-
-    protected static function functions(Package $package): PhpNode
-    {
-        $result = [];
-        foreach (Package::VISIBILITY_MAP as $visibility => $visibilityName) {
-            $result[$visibilityName] = [];
-            foreach ($package->functions[$visibility] as $name => $fn) {
-                $result[$visibilityName][$name] = $fn;
-            }
-        }
-        return PHP::string(base64_encode(serialize($result)));
-    }
-
     protected static function functionHeaders(Package $package): PhpNode
     {
         $result = [];

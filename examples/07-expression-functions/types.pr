@@ -1,0 +1,3 @@
+package Prerano::Examples::ExpressionFunctions;
+
+on array fn length() int = count($this);

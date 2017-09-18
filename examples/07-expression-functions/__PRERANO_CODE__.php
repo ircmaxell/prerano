@@ -1,4 +1,4 @@
-<?php namespace Prerano\Examples\BasicUsage;
+<?php namespace Prerano\Examples\ExpressionFunctions;
 
 final class __PRERANO_METADATA__
 {
@@ -22,17 +22,17 @@ final class __PRERANO_METADATA__
 }
 final class __PRERANO_CODE__
 {
-    private static $Prerano܃܃Examples܃܃BasicUsage܃܃instance;
-    public static function Prerano܃܃Examples܃܃BasicUsage܃܃∫()
+    private static $Prerano܃܃Examples܃܃ExpressionFunctions܃܃instance;
+    public static function Prerano܃܃Examples܃܃ExpressionFunctions܃܃∫()
     {
-        if (!self::$Prerano܃܃Examples܃܃BasicUsage܃܃instance) {
-            self::$Prerano܃܃Examples܃܃BasicUsage܃܃instance = new self();
+        if (!self::$Prerano܃܃Examples܃܃ExpressionFunctions܃܃instance) {
+            self::$Prerano܃܃Examples܃܃ExpressionFunctions܃܃instance = new self();
         }
-        return self::$Prerano܃܃Examples܃܃BasicUsage܃܃instance;
+        return self::$Prerano܃܃Examples܃܃ExpressionFunctions܃܃instance;
     }
     public function __construct()
     {
-        return $_1;
+        return $_91;
     }
 }
-__PRERANO_CODE__::Prerano܃܃Examples܃܃BasicUsage܃܃∫();
+__PRERANO_CODE__::Prerano܃܃Examples܃܃ExpressionFunctions܃܃∫();
