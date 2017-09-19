@@ -30,28 +30,33 @@ final class __PRERANO_CODE__
         }
         return self::$Prerano܃܃Examples܃܃PublicFunctions܃܃instance;
     }
+    /** fn(int,float)int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃id($a, $b)
     {
         return $a;
     }
+    /** fn((0|1))int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃decode($status)
     {
         return $status;
     }
+    /** fn()int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃getOne()
     {
         return 1;
     }
+    /** fn(int)int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃inc($a)
     {
-        $_126 = $a + 1;
-        return $_126;
+        $_179 = $a + 1;
+        return $_179;
     }
+    /** fn()none */
     public function __construct()
     {
-        $_131 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
-        $_133 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_131);
-        return $_133;
+        $_184 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
+        $_186 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_184);
+        return $_186;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃PublicFunctions܃܃∫();

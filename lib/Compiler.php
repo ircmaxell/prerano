@@ -15,6 +15,8 @@ class Compiler
     {
         $this->debug = $debug;
         $this->parser = new Parser\Parser(new Parser\Lexer);
+        $this->traverser = new AST\Traverser;
+        $this->traverser->addVisitor(new AST\Visitor\AliasResolver);
         $this->generator = new CFG\Generator;
         $this->compiler = new Compiler\PHP;
         $this->scope = new Scope;
@@ -35,8 +37,11 @@ class Compiler
                     continue;
                 }
                 $filename = $sub->getPathname();
-                $packages[] = $tmp = $this->compileFile($filename);
-                $this->debugAST($filename, $tmp);
+                $package = $this->compileFile($filename);
+                $this->debugAST($filename, $package);
+                $this->traverser->traverse($package);
+                $this->debugAST($filename . '.processed', $package);
+                $packages[] = $package;
             }
             $target = $file . '/';
         } else {

@@ -2,3 +2,9 @@ package Prerano::Examples::ExpressionFunctions;
 
 on int fn next() int = $_ + 1;
 on int fn prev() int = $_ - 1;
+
+on int fn even() bool = match($_) {
+  $_ % 2 == 0: true;
+  $_ % 2 == 1: false;
+  else: false;
+};

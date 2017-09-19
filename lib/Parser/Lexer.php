@@ -10,7 +10,9 @@ class Lexer
     const TOKEN_MAP = [
         'protected' => Tokens::T_PROTECTED,
         'package' => Tokens::T_PACKAGE,
+        'import' => Tokens::T_IMPORT,
         'public' => Tokens::T_PUBLIC,
+        'class' => Tokens::T_CLASS,
         'match' => Tokens::T_MATCH,
         'else' => Tokens::T_ELSE,
         'enum' => Tokens::T_ENUM,
@@ -18,6 +20,7 @@ class Lexer
         '::' => Tokens::T_SCOPE_OPERATOR,
         '->' => Tokens::T_SKINNY_ARROW,
         '==' => Tokens::T_EQUALS,
+        'as' => Tokens::T_AS,
         'fn' => Tokens::T_FUNCTION,
         'is' => Tokens::T_IS,
         'on' => Tokens::T_ON,

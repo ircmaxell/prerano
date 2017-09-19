@@ -194,10 +194,11 @@ class Code
                 } else {
                     $name = Scope::resolveLocal($package, $name);
                 }
-                $result[] = PHP::classMethod($name, PHP::modifier('public'), self::params(...$func->parameters), a(
+                $result[] = $tmp = PHP::classMethod($name, PHP::modifier('public'), self::params(...$func->parameters), a(
                     ...self::compileBlock($package, $func->body),
                     ...[PHP::return(Scope::variable($func->result))]
                 ));
+                $tmp->setDocComment(PHP::docComment($func->getSignature()->toString()));
             }
         }
         return $result;
@@ -211,10 +212,11 @@ class Code
                 foreach ($level2 as list($type, $function)) {
                     $name = Scope::resolveExpressionLocal($package, $name, $type);
                     $root = new Variable\Parameter("_", 0, $type);
-                    $result[] = PHP::classMethod($name, PHP::modifier('public'), self::params($root, ...$function->parameters), a(
+                    $result[] = $tmp = PHP::classMethod($name, PHP::modifier('public'), self::params($root, ...$function->parameters), a(
                         ...self::compileBlock($package, $function->body),
                         ...[PHP::return(Scope::variable($function->result))]
                     ));
+                    $tmp->setDocComment(PHP::docComment($type->toString() . '->' . $function->getSignature()->toString()));
                 }
             }
         }

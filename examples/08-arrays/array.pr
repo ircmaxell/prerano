@@ -1,0 +1,10 @@
+package Prerano::Examples::Arrays;
+
+fn test() array {
+    [1, 2, 3]->count();
+    [1, 2, 3]->slice(1, 2);
+}
+
+on array fn count() int = php::count($_);
+
+on array fn slice(int $offset, int $length) array = php::array_slice($_, $offset, $length);

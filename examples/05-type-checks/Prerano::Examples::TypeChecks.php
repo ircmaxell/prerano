@@ -30,25 +30,29 @@ final class __PRERANO_CODE__
         }
         return self::$Prerano܃܃Examples܃܃TypeChecks܃܃instance;
     }
+    /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃isString($arg)
     {
-        $_109 = is_string($arg);
-        return $_109;
+        $_162 = is_string($arg);
+        return $_162;
     }
+    /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃isInt($arg)
     {
-        $_113 = is_int($arg);
-        return $_113;
+        $_166 = is_int($arg);
+        return $_166;
     }
+    /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃isNumeric($arg)
     {
-        $_117 = is_int($arg) || (is_float($arg) || is_int($arg));
-        return $_117;
+        $_170 = is_int($arg) || (is_float($arg) || is_int($arg));
+        return $_170;
     }
+    /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃is0or1($arg)
     {
-        $_121 = $arg === 0 || $arg === 1;
-        return $_121;
+        $_174 = $arg === 0 || $arg === 1;
+        return $_174;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃TypeChecks܃܃∫();

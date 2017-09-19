@@ -30,10 +30,12 @@ final class __PRERANO_CODE__
         }
         return self::$Prerano܃܃Examples܃܃PublicFunctions܃܃instance;
     }
+    /** fn(int,float)int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃id($a, $b)
     {
         return $a;
     }
+    /** fn((0|1))int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃decode($status)
     {
         return $status;

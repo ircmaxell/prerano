@@ -130,6 +130,8 @@ class CFGGrapher
                 $result .= $sep . '$' . $var->name;
             } elseif ($var instanceof Variable\Temp) {
                 $result .= $sep . '$' . $var->getId();
+            } elseif ($var instanceof Variable\Array_) {
+                $result .= '[' . self::dumpVariable(...$var->items) . ']';
             } else {
                 var_dump($var);
                 throw new \LogicException("Unknown variable type: " . get_class($var));

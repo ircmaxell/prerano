@@ -24,6 +24,17 @@ class Generator
     {
         foreach ($nodes as $node) {
             switch ($node->getName()) {
+                case 'Stmt_Class':
+                    if (empty($node->parents)) {
+                        $package->addTypeDeclaration($node->name->toString(), new Type(Type::OBJECT), $node->visibility);
+                    } else {
+                        $parents = [];
+                        foreach ($node->parents as $parent) {
+                            $parents[] = new Type(Type::TYPE_REFERENCE, $parent->toString());
+                        }
+                        $package->addTypeDeclaration($node->name->toString(), new Type(Type::INTERSECTION, null, new Type(Type::OBJECT), ...$parents), $node->visibility);
+                    }
+                    break;
                 case 'Stmt_Enum':
                     $i = 0;
                     $subTypes = [];
@@ -57,6 +68,10 @@ class Generator
                     }
                     $package->addFunctionDeclaration($node->name->toString(), $this->generateFunction($node), $node->visibility);
                     break;
+                case 'Stmt_Import':
+                    var_dump($node);
+                    die(-1);
+                    break;
                 case 'Stmt_Type':
                     $package->addTypeDeclaration($node->name->toString(), $this->generateType($node->type), $node->visibility);
                     break;
@@ -85,6 +100,12 @@ class Generator
                     throw new \LogicException("Named parameters not supported yet!");
                 }
                 return $this->generateNode($node->value, $block, Block::MODE_RO);
+            case 'Expr_Array':
+                $exprs = [];
+                foreach ($node->items as $item) {
+                    $exprs[] = $this->generateNode($item, $block, Block::MODE_RO);
+                }
+                return $block->write(new Variable\Array_(...$exprs));
             case 'Expr_Assign':
                 $expr = $this->generateNode($node->expr, $block, Block::MODE_RO);
                 $var = $this->generateNode($node->var, $block, Block::MODE_WO);

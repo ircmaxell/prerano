@@ -1,0 +1,190 @@
+Package Prerano::Examples::Arrays
+  Stmt_Function
+    name:
+      Name
+        parts [
+          test
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              array
+            ]
+    parameters [
+    ]
+    body [
+      Expr_MethodCall
+        obj:
+          Expr_Array
+            items [
+              Scalar_LNumber
+                value(1)
+              Scalar_LNumber
+                value(2)
+              Scalar_LNumber
+                value(3)
+            ]
+        name:
+          Name
+            parts [
+              count
+            ]
+        args [
+        ]
+      Expr_MethodCall
+        obj:
+          Expr_Array
+            items [
+              Scalar_LNumber
+                value(1)
+              Scalar_LNumber
+                value(2)
+              Scalar_LNumber
+                value(3)
+            ]
+        name:
+          Name
+            parts [
+              slice
+            ]
+        args [
+          Arg
+            value:
+              Scalar_LNumber
+                value(1)
+            name()
+          Arg
+            value:
+              Scalar_LNumber
+                value(2)
+            name()
+        ]
+    ]
+  Stmt_ExprFunction
+    on:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              array
+            ]
+    name:
+      Name
+        parts [
+          count
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+    ]
+    body [
+      Expr_FuncCall
+        name:
+          Expr_IdentifierReference
+            name:
+              Name_Qualified
+                parts [
+                  php
+                  count
+                ]
+        args [
+          Arg
+            value:
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      _
+                    ]
+            name()
+        ]
+    ]
+  Stmt_ExprFunction
+    on:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              array
+            ]
+    name:
+      Name
+        parts [
+          slice
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              array
+            ]
+    parameters [
+      Stmt_Parameter
+        name(offset)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+      Stmt_Parameter
+        name(length)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+    ]
+    body [
+      Expr_FuncCall
+        name:
+          Expr_IdentifierReference
+            name:
+              Name_Qualified
+                parts [
+                  php
+                  array_slice
+                ]
+        args [
+          Arg
+            value:
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      _
+                    ]
+            name()
+          Arg
+            value:
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      offset
+                    ]
+            name()
+          Arg
+            value:
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      length
+                    ]
+            name()
+        ]
+    ]

@@ -30,6 +30,7 @@ final class __PRERANO_CODE__
         }
         return self::$Prerano܃܃Examples܃܃Matching܃܃instance;
     }
+    /** fn(any)int */
     public function Prerano܃܃Examples܃܃Matching܃܃length($input)
     {
         $_17 = is_string($input);
@@ -52,6 +53,7 @@ final class __PRERANO_CODE__
         }
         return $_81;
     }
+    /** fn(int)int */
     public function Prerano܃܃Examples܃܃Matching܃܃foo($input)
     {
         $_43 = $input === 0;
@@ -67,6 +69,7 @@ final class __PRERANO_CODE__
         }
         return $_82;
     }
+    /** fn(int)int */
     public function Prerano܃܃Examples܃܃Matching܃܃mod2($input)
     {
         $_67 = $this->Prerano܃܃Examples܃܃Matching܃܃isEven($input);
@@ -82,6 +85,7 @@ final class __PRERANO_CODE__
         }
         return $_83;
     }
+    /** fn(int)(true|false) */
     public function Prerano܃܃Examples܃܃Matching܃܃isEven($i)
     {
         $_59 = $i % 2;

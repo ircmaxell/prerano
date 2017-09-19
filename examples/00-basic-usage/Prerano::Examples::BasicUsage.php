@@ -30,6 +30,7 @@ final class __PRERANO_CODE__
         }
         return self::$Prerano܃܃Examples܃܃BasicUsage܃܃instance;
     }
+    /** fn()none */
     public function __construct()
     {
         return $_1;

@@ -28,6 +28,23 @@ class Name extends NodeAbstract
         return array('parts');
     }
 
+    public function isPrefixedBy($prefix): bool
+    {
+        $prefix = self::prepareName($prefix);
+        foreach ($prefix as $key => $value) {
+            if ($value !== $this->parts[$key]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function getSuffix($prefix): array
+    {
+        $prefix = self::prepareName($prefix);
+        return array_slice($this->parts, count($prefix));
+    }
+
     /**
      * Gets the first part of the name, i.e. everything before the first namespace separator.
      *

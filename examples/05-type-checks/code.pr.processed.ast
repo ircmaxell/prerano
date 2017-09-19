@@ -1,0 +1,183 @@
+Package Prerano::Examples::TypeChecks
+  Stmt_Function
+    name:
+      Name
+        parts [
+          isString
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              bool
+            ]
+    parameters [
+      Stmt_Parameter
+        name(arg)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  any
+                ]
+        default()
+    ]
+    body [
+      Expr_Is
+        cond:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  arg
+                ]
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  string
+                ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          isInt
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              bool
+            ]
+    parameters [
+      Stmt_Parameter
+        name(arg)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  any
+                ]
+        default()
+    ]
+    body [
+      Expr_Is
+        cond:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  arg
+                ]
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          isNumeric
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              bool
+            ]
+    parameters [
+      Stmt_Parameter
+        name(arg)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  any
+                ]
+        default()
+    ]
+    body [
+      Expr_Is
+        cond:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  arg
+                ]
+        type:
+          Expr_Type_Union
+            left:
+              Expr_Type_Named
+                name:
+                  Name
+                    parts [
+                      int
+                    ]
+            right:
+              Expr_Type_Named
+                name:
+                  Name
+                    parts [
+                      float
+                    ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          is0or1
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              bool
+            ]
+    parameters [
+      Stmt_Parameter
+        name(arg)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  any
+                ]
+        default()
+    ]
+    body [
+      Expr_Is
+        cond:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  arg
+                ]
+        type:
+          Expr_Type_Union
+            left:
+              Expr_Type_Value
+                value:
+                  Scalar_LNumber
+                    value(0)
+            right:
+              Expr_Type_Value
+                value:
+                  Scalar_LNumber
+                    value(1)
+    ]

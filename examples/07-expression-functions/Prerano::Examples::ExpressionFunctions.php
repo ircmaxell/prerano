@@ -30,20 +30,37 @@ final class __PRERANO_CODE__
         }
         return self::$Prerano܃܃Examples܃܃ExpressionFunctions܃܃instance;
     }
+    /** fn()none */
     public function __construct()
     {
-        $_93 = $this->Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int(1);
-        return $_93;
+        $_122 = $this->Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int(1);
+        return $_122;
     }
+    /** int->fn()int */
     public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int($_)
     {
-        $_98 = $_ + 1;
-        return $_98;
+        $_127 = $_ + 1;
+        return $_127;
     }
+    /** int->fn()int */
     public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃prev→int($_)
     {
-        $_103 = $_ - 1;
-        return $_103;
+        $_132 = $_ - 1;
+        return $_132;
+    }
+    /** int->fn()(true|false) */
+    public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃even→int($_)
+    {
+        $_138 = $_ % 2;
+        $_140 = $_138 === 0;
+        if ($_140) {
+        } else {
+            $_147 = $_ % 2;
+            $_149 = $_147 === 1;
+            if ($_149) {
+            }
+        }
+        return $_155;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃ExpressionFunctions܃܃∫();

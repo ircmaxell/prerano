@@ -1,0 +1,29 @@
+Package Prerano::Examples::ExpressionFunctions
+  Stmt_Function
+    name:
+      Name
+        parts [
+          __main__
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              none
+            ]
+    parameters [
+    ]
+    body [
+      Expr_MethodCall
+        obj:
+          Scalar_LNumber
+            value(1)
+        name:
+          Name
+            parts [
+              next
+            ]
+        args [
+        ]
+    ]

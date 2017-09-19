@@ -1,0 +1,104 @@
+Package Prerano::Examples::CallingPHPFunctions
+  Stmt_Function
+    name:
+      Name
+        parts [
+          intdiv
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(dividend)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+      Stmt_Parameter
+        name(divisor)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+    ]
+    body [
+      Expr_FuncCall
+        name:
+          Expr_IdentifierReference
+            name:
+              Name_Qualified
+                parts [
+                  php
+                  intdiv
+                ]
+        args [
+          Arg
+            value:
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      dividend
+                    ]
+            name()
+          Arg
+            value:
+              Expr_Variable
+                name:
+                  Name
+                    parts [
+                      divisor
+                    ]
+            name()
+        ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          __main__
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              none
+            ]
+    parameters [
+    ]
+    body [
+      Expr_FuncCall
+        name:
+          Expr_IdentifierReference
+            name:
+              Name
+                parts [
+                  intdiv
+                ]
+        args [
+          Arg
+            value:
+              Scalar_LNumber
+                value(3)
+            name()
+          Arg
+            value:
+              Scalar_LNumber
+                value(2)
+            name()
+        ]
+    ]

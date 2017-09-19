@@ -5,16 +5,14 @@
 %left '+' '-'
 %left '*' '/' '%'
 %left '|' '&'
-%nonassoc '(' ')'
+%nonassoc '(' ')' '[' ']'
 %left '?'
 %right '<' '>'
 
 %left ':'
 %left ','
 %right T_SKINNY_ARROW
-%right T_TYPE
-%right T_FUNCTION
-%right T_ON
+%right T_TYPE T_FUNCTION T_IMPORT T_ON T_AS T_CLASS
 %left T_IS
 %right T_ELSE
 %left T_SCOPE_OPERATOR
@@ -37,6 +35,9 @@
 %token T_ELSE
 %token T_EQUALS
 %token T_SKINNY_ARROW
+%token T_IMPORT
+%token T_AS
+%token T_CLASS
 
 %%
 
@@ -68,6 +69,8 @@ top_statement:
     | enum_decl      { $$ = $1; }
     | function_decl  { $$ = $1; }
     | expr_fn_decl   { $$ = $1; }
+    | import_decl    { $$ = $1; }
+    | class_decl     { $$ = $1; }
 ;
 
 terminated_statement:
@@ -78,16 +81,46 @@ statement:
 ;
 
 identifier:
+      unqualified_identifier                  { $$ = $1; }
+    | identifier T_SCOPE_OPERATOR identifier  { $$ = Node\Name\Qualified[$1, $3]; }
+;
+
+unqualified_identifier:
       T_STRING                                { $$ = Node\Name[$1]; }
     | T_TYPE                                  { $$ = Node\Name[$1]; }
     | T_PACKAGE                               { $$ = Node\Name[$1]; }
     | T_ON                                    { $$ = Node\Name[$1]; }
-    | identifier T_SCOPE_OPERATOR identifier  { $$ = Node\Name\Qualified[$1, $3]; }
+    | T_IMPORT                                { $$ = Node\Name[$1]; }
+    | T_AS                                    { $$ = Node\Name[$1]; }
+;
+
+identifier_list:
+      identifier_list ',' identifier  { push($1, $3); }
+    | identifier                      { init($1); }
 ;
 
 scalar:
       T_LNUMBER                 { $$ = $this->parseLNumber($1, attributes()); }
     | T_DNUMBER                 { $$ = $this->parseDNumber($1, attributes()); }
+;
+
+import_decl:
+      T_IMPORT identifier ';'                               { $$ = Node\Stmt\Import[$2]; }
+    | T_IMPORT identifier T_AS unqualified_identifier ';'   { $$ = Node\Stmt\Alias[$2, $4]; }
+;
+
+class_decl:
+      optional_modifier T_CLASS identifier '{' class_statement_list '}'                       { $$ = Node\Stmt\Class_[$3, [], $5, $1]; }
+    | optional_modifier T_CLASS identifier '<' identifier_list '{' class_statement_list '}'   { $$ = Node\Stmt\Class_[$3, $5, $7, $1]; }
+;
+
+class_statement_list:
+      class_statement_list class_statement      { pushNormalizing($1, $2); }
+    | /* empty */                               { init(); }
+;
+
+class_statement:
+      function_decl  { $$ = $1; }
 ;
 
 type_decl:
@@ -103,7 +136,7 @@ type_expr:
     | type_expr '*'                                     { $$ = Node\Expr\Type\Pointer[$1]; }
     | type_expr '?'                                     { $$ = Node\Expr\Type\Union[$1, Node\Expr\Type[Node\Name['null']]]; }
     | type_expr '<' type_expr_list '>'                  { $$ = Node\Expr\Type\Specification[$1, $3]; }
-    | T_FUNCTION '(' type_expr_list ')' type_expr   { $$ = Node\Expr\Type\Function_[$3, $5]; }
+    | T_FUNCTION '(' type_expr_list ')' type_expr       { $$ = Node\Expr\Type\Function_[$3, $5]; }
 ;
 
 type_expr_list:
@@ -169,6 +202,17 @@ expr:
     | '$' identifier                                        { $$ = Node\Expr\Variable[$2]; }
     | scalar                                                { $$ = $1; }
     | expr T_SKINNY_ARROW identifier '(' argument_list ')'  { $$ = Node\Expr\MethodCall[$1, $3, $5]; }
+    | '[' expr_list ']'                                     { $$ = Node\Expr\Array_[$2]; }
+;
+
+expr_list:
+      expr_list_ex            { $$ = $1; }
+    | expr_list_ex ','        { $$ = $1; }
+;
+
+expr_list_ex:
+      expr_list_ex ',' expr   { push($1, $3); }
+    | expr                    { init($1); }
 ;
 
 binary_expr:

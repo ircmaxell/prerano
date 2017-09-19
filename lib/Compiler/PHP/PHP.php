@@ -4,6 +4,7 @@ namespace Prerano\Compiler\PHP;
 use Prerano\Language\Package;
 use Prerano\Language\Type;
 use PhpParser\Node as PhpNode;
+use PhpParser\Comment;
 
 class PHP
 {
@@ -30,6 +31,7 @@ class PHP
                     self::scalar($key)
                 );
             } else {
+                $i++;
                 $result[] = new PhpNode\Expr\ArrayItem($value);
             }
         }
@@ -99,6 +101,11 @@ class PHP
     public static function constFetch(string $name): PhpNode
     {
         return new PhpNode\Expr\ConstFetch(self::name($name));
+    }
+
+    public static function docComment(string $body): Comment
+    {
+        return new Comment\Doc('/** ' . $body . ' */');
     }
 
     public static function empty(PhpNode $expr): PhpNode

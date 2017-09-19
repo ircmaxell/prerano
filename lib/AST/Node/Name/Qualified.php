@@ -17,6 +17,6 @@ class Qualified extends Name
      */
     public function __construct(Node\Name $prefix, Node\Name $name, array $attributes = array())
     {
-        parent::__construct($prefix->toString() . '::' . $name->toString(), $attributes);
+        parent::__construct(array_merge($prefix->parts, $name->parts), $attributes);
     }
 }

@@ -113,6 +113,8 @@ class Scope
             return PHP::scalar($var->value);
         } elseif ($var instanceof Variable\IdentifierReference) {
             return PHP::name($var->value);
+        } elseif ($var instanceof Variable\Array_) {
+            return PHP::array(self::variables(...$var->items));
         }
         return PHP::var('_' . $var->getId());
     }

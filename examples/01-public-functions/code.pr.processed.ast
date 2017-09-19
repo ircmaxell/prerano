@@ -1,0 +1,98 @@
+Package Prerano::Examples::PublicFunctions
+  Stmt_Function
+    name:
+      Name
+        parts [
+          inc
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(a)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  int
+                ]
+        default()
+    ]
+    body [
+      Expr_BinaryOp_Plus
+        left:
+          Expr_Variable
+            name:
+              Name
+                parts [
+                  a
+                ]
+        right:
+          Scalar_LNumber
+            value(1)
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          getOne
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+    ]
+    body [
+      Scalar_LNumber
+        value(1)
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          __main__
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              none
+            ]
+    parameters [
+    ]
+    body [
+      Expr_FuncCall
+        name:
+          Expr_IdentifierReference
+            name:
+              Name
+                parts [
+                  inc
+                ]
+        args [
+          Arg
+            value:
+              Expr_FuncCall
+                name:
+                  Expr_IdentifierReference
+                    name:
+                      Name
+                        parts [
+                          getOne
+                        ]
+                args [
+                ]
+            name()
+        ]
+    ]
