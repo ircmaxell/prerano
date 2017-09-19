@@ -36,6 +36,7 @@
 %token T_MATCH
 %token T_ELSE
 %token T_EQUALS
+%token T_SKINNY_ARROW
 
 %%
 
@@ -159,15 +160,15 @@ parameter:
 ;
 
 expr:
-      binary_expr                               { $$ = $1; }
-    | expr '(' argument_list ')'                { $$ = Node\Expr\FuncCall[$1, $3]; }
-    | expr T_IS type_expr                       { $$ = Node\Expr\Is[$1, $3]; }
-    | T_MATCH '(' expr ')' '{' match_list '}'   { $$ = Node\Expr\Match[$3, $6]; }
-    | '(' expr ')'                              { $$ = $2; }  
-    | identifier                                { $$ = Node\Expr\IdentifierReference[$1]; }
-    | '$' identifier                            { $$ = Node\Expr\Variable[$2]; }
-    | scalar                                    { $$ = $1; }
-    
+      binary_expr                                           { $$ = $1; }
+    | expr '(' argument_list ')'                            { $$ = Node\Expr\FuncCall[$1, $3]; }
+    | expr T_IS type_expr                                   { $$ = Node\Expr\Is[$1, $3]; }
+    | T_MATCH '(' expr ')' '{' match_list '}'               { $$ = Node\Expr\Match[$3, $6]; }
+    | '(' expr ')'                                          { $$ = $2; }  
+    | identifier                                            { $$ = Node\Expr\IdentifierReference[$1]; }
+    | '$' identifier                                        { $$ = Node\Expr\Variable[$2]; }
+    | scalar                                                { $$ = $1; }
+    | expr T_SKINNY_ARROW identifier '(' argument_list ')'  { $$ = Node\Expr\MethodCall[$1, $3, $5]; }
 ;
 
 binary_expr:

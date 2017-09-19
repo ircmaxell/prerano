@@ -59,6 +59,16 @@ abstract class BlockAbstract implements Block
         return isset($this->outbound[$name]);
     }
 
+    public function replaceNodeWith(Node $old, Node $new)
+    {
+        $key = array_search($old, $this->nodes, true);
+        if ($key !== false) {
+            $this->nodes[$key] = $new;
+        } else {
+            throw new \RuntimeException('Could not find node to replace');
+        }
+    }
+
     public function appendNode(Node ...$nodes)
     {
         foreach ($nodes as $node) {

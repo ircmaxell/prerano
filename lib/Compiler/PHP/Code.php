@@ -140,7 +140,12 @@ class Code
                         )
                     );
                     break;
-                
+                case 'Expr_ExpressionCall':
+                    $return[] = PHP::assign(
+                        Scope::variable($node->result),
+                        Scope::resolveExpressionCall($package, $node, ...$node->args)
+                    );
+                    break;
                 case 'Expr_FuncCall':
                     $return[] = PHP::assign(
                         Scope::variable($node->result),

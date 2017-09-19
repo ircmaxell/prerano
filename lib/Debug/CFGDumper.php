@@ -74,7 +74,9 @@ class CFGDumper
                     } elseif ($subNode instanceof Node\Expr\MatchCase) {
                         $result .= "                match_{$subNode->id} (" . self::dumpVariable($subNode->cond) . ")\n";
                     } elseif ($subNode instanceof Type) {
-                        $result .= "                $name: TYPE(" . self::dumpType($subNode) . ")\n";
+                        $result .= "                $name: " . self::dumpType($subNode) . "\n";
+                    } elseif (is_string($subNode)) {
+                        $result .= "                $name: $name\n";
                     } else {
                         var_dump($subNode);
                         throw new \LogicException("Nodes can only have variables as children for node $name: " . $node->getName());

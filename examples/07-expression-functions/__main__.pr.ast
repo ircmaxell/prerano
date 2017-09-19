@@ -15,4 +15,15 @@ Package Prerano::Examples::ExpressionFunctions
     parameters [
     ]
     body [
+      Expr_MethodCall
+        obj:
+          Scalar_LNumber
+            value(1)
+        name:
+          Name
+            parts [
+              next
+            ]
+        args [
+        ]
     ]

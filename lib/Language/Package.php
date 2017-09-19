@@ -76,6 +76,20 @@ class Package
         $this->expressionFunctions[$visibility][$name][] = [$on, $function];
     }
 
+    public function lookupExpressionFunction(Type $on, string $name)
+    {
+        for ($i = self::PUBLIC; $i <= self::PRIVATE; $i++) {
+            if (!isset($this->expressionFunctions[$i][$name])) {
+                continue;
+            }
+            foreach ($this->expressionFunctions[$i][$name] as list($rootOn, $function)) {
+                if ($on->resolves($rootOn)) {
+                    return $rootOn;
+                }
+            }
+        }
+    }
+
     public function mergeWith(Package $other): Package
     {
         if ($this->name !== $other->name) {

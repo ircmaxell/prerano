@@ -208,6 +208,8 @@ class Generator
                 }
 
                 return new Variable\Phi(...$results);
+            case 'Expr_MethodCall':
+                return $this->generateMethodCall($node, $block, $mode);
             case 'Expr_PointerDereference':
                 $expr = $this->generateNode($node->expr, $block, Block::MODE_RO);
                 $isPtr = $expr->getDeclaredType()->type === Type::POINTER;
@@ -258,6 +260,19 @@ class Generator
         $call = $this->generateNode($node->name, $block, Block::MODE_RO);
         $result = new Variable\Temp(new Type(Type::UNKNOWN));
         $block->appendNode(new Node\Expr\FuncCall($call, $args, $result, $node->getAttributes()));
+        $block->write($result);
+        return $result;
+    }
+
+    protected function generateMethodCall(AST\Expr\MethodCall $node, Block &$block, int $mode = Block::MODE_RO): Variable
+    {
+        $args = [];
+        foreach ($node->args as $arg) {
+            $args[] = $this->generateNode($arg, $block, Block::MODE_RO);
+        }
+        $obj = $this->generateNode($node->obj, $block, Block::MODE_RO);
+        $result = new Variable\Temp(new Type(Type::UNKNOWN));
+        $block->appendNode(new Node\Expr\MethodCall($obj, $node->name->toString(), $args, $result, $node->getAttributes()));
         $block->write($result);
         return $result;
     }

@@ -44,14 +44,14 @@ final class __PRERANO_CODE__
     }
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃inc($a)
     {
-        $_124 = $a + 1;
-        return $_124;
+        $_126 = $a + 1;
+        return $_126;
     }
     public function __construct()
     {
-        $_129 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
-        $_131 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_129);
-        return $_131;
+        $_131 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
+        $_133 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_131);
+        return $_133;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃PublicFunctions܃܃∫();

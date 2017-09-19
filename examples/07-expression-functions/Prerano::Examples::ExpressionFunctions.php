@@ -32,17 +32,18 @@ final class __PRERANO_CODE__
     }
     public function __construct()
     {
-        return $_91;
+        $_93 = $this->Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int(1);
+        return $_93;
     }
     public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int($_)
     {
-        $_96 = $_ + 1;
-        return $_96;
+        $_98 = $_ + 1;
+        return $_98;
     }
     public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃prev→int($_)
     {
-        $_101 = $_ - 1;
-        return $_101;
+        $_103 = $_ - 1;
+        return $_103;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃ExpressionFunctions܃܃∫();

@@ -16,7 +16,8 @@ class Engine
         $this->scope = $scope;
         $this->addRule(
             new Rule\TypeReconstruction,
-            new Rule\FunctionCallResolver($scope)
+            new Rule\FunctionCallResolver($scope),
+            new Rule\ExpressionFunctionResolver($scope)
         );
     }
 

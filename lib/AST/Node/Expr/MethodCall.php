@@ -5,10 +5,10 @@ namespace Prerano\AST\Node\Expr;
 use Prerano\AST\Node;
 use Prerano\AST\Node\Expr;
 
-class FuncCall extends Expr
+class MethodCall extends Expr
 {
+    public $obj;
     public $name;
-    public $args;
 
     /**
      * Constructs an assignment node.
@@ -17,16 +17,17 @@ class FuncCall extends Expr
      * @param Expr[]   $args  Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Node\Expr $name, array $args, array $attributes = array())
+    public function __construct(Node\Expr $obj, Node $name, array $args, array $attributes = array())
     {
         parent::__construct($attributes);
+        $this->obj = $obj;
         $this->name = $name;
         $this->setArguments(...$args);
     }
 
     public function getSubNodeNames()
     {
-        return array('name', 'args');
+        return array('obj', 'name', 'args');
     }
 
     private function setArguments(Node\Arg ...$args)

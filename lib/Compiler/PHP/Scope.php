@@ -3,6 +3,7 @@
 namespace Prerano\Compiler\PHP;
 
 use PhpParser\Node as PhpNode;
+use Prerano\CFG\Node\Expr\ExpressionCall;
 use Prerano\CFG\Node\Expr\FuncCall;
 use Prerano\Language\Block;
 use Prerano\Language\Function_;
@@ -53,6 +54,25 @@ class Scope
         $prefix = explode('::', $package->name);
 
         return self::join(...$prefix, ...$parts, ...[$end]);
+    }
+
+    public static function resolveExpressionCall(Package $package, ExpressionCall $call, Variable ...$args): PhpNode
+    {
+        $args = self::variables(...$args);
+        array_unshift($args, self::variable($call->obj));
+        $parts = explode(self::FROM_SEPARATOR, $call->name);
+        $func = array_pop($parts);
+        if (empty($parts) || self::join(...$parts) === self::resolvePackageName($package)) {
+            // short-circuit, local call:
+            return PHP::instanceCall(
+                PHP::var('this'),
+                Scope::resolveLocal($package, $func . self::EXPRESSION_SEPARATOR . self::sanitize($call->rootType->toString())),
+                ...$args
+            );
+        }
+
+        var_dump($parts, $package->name);
+        throw new \Logic("Unknown how to resolve {$call->name->value}");
     }
 
     public static function resolveFunctionCall(Package $package, FuncCall $call, Variable ...$args): PhpNode

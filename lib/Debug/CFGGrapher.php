@@ -106,7 +106,9 @@ class CFGGrapher
             } elseif ($subNode instanceof Variable) {
                 $result .= "\n$name: " . self::dumpVariable($subNode);
             } elseif ($subNode instanceof Type) {
-                $result .= "\n$name: TYPE(" . $subNode->toString() . ")";
+                $result .= "\n$name: " . $subNode->toString();
+            } elseif (is_string($subNode)) {
+                $result .= "\n$name: $subNode";
             } elseif ($subNode !== null) {
                 var_dump($subNode);
                 throw new \LogicException("Unknown subnode type: " . gettype($subNode));
