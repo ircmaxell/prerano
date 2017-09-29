@@ -12,5 +12,5 @@ Right now, it's just a toy and proving ground. Over time, if it's deemed useful,
 
 ## More Info
 
-Check the [documentation](docs/), and specifically the [language design document](docs/02-language_design.md).
+Check the [documentation](https://ircmaxell.github.io/prerano/), and specifically the [language design document](https://ircmaxell.github.io/prerano/02-language_design).
 
