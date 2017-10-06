@@ -19,6 +19,7 @@ class Lexer
         'type' => Tokens::T_TYPE,
         '::' => Tokens::T_SCOPE_OPERATOR,
         '->' => Tokens::T_SKINNY_ARROW,
+        '|>' => Tokens::T_PIPE_ARROW,
         '==' => Tokens::T_EQUALS,
         'as' => Tokens::T_AS,
         'fn' => Tokens::T_FUNCTION,

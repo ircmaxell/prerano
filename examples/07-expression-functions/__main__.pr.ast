@@ -20,10 +20,12 @@ Package Prerano::Examples::ExpressionFunctions
           Scalar_LNumber
             value(1)
         name:
-          Name
-            parts [
-              next
-            ]
+          Expr_IdentifierReference
+            name:
+              Name
+                parts [
+                  next
+                ]
         args [
         ]
     ]

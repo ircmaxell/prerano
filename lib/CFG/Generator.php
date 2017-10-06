@@ -231,6 +231,8 @@ class Generator
                 return new Variable\Phi(...$results);
             case 'Expr_MethodCall':
                 return $this->generateMethodCall($node, $block, $mode);
+            case 'Expr_Pipe':
+                return $this->generateFuncCall($node, $block, $mode);
             case 'Expr_PointerDereference':
                 $expr = $this->generateNode($node->expr, $block, Block::MODE_RO);
                 $isPtr = $expr->getDeclaredType()->type === Type::POINTER;
@@ -272,9 +274,12 @@ class Generator
         return new Function_($parameters, $returnType, $block, $result);
     }
 
-    protected function generateFuncCall(AST\Expr\FuncCall $node, Block &$block, int $mode = Block::MODE_RO): Variable
+    protected function generateFuncCall(AST\Expr $node, Block &$block, int $mode = Block::MODE_RO): Variable
     {
         $args = [];
+        if ($node instanceof AST\Expr\Pipe) {
+            $args[] = $this->generateNode(new AST\Arg($node->param), $block, Block::MODE_RO);
+        }
         foreach ($node->args as $arg) {
             $args[] = $this->generateNode($arg, $block, Block::MODE_RO);
         }

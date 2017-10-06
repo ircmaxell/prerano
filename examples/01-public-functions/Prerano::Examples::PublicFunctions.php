@@ -48,15 +48,15 @@ final class __PRERANO_CODE__
     /** fn(int)int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃inc($a)
     {
-        $_179 = $a + 1;
-        return $_179;
+        $_193 = $a + 1;
+        return $_193;
     }
     /** fn()none */
     public function __construct()
     {
-        $_184 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
-        $_186 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_184);
-        return $_186;
+        $_198 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
+        $_200 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_198);
+        return $_200;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃PublicFunctions܃܃∫();
