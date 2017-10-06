@@ -19,17 +19,17 @@ use Prerano\AST\Node\Stmt;
  */
 class Parser extends ParserAbstract
 {
-    protected $tokenToSymbolMapSize = 276;
+    protected $tokenToSymbolMapSize = 277;
     protected $actionTableSize = 141;
-    protected $gotoTableSize = 97;
+    protected $gotoTableSize = 153;
 
-    protected $invalidSymbol = 42;
+    protected $invalidSymbol = 43;
     protected $errorSymbol = 1;
     protected $defaultAction = -32766;
     protected $unexpectedTokenRule = 32767;
 
-    protected $YY2TBLSTATE  = 102;
-    protected $YYNLSTATES   = 138;
+    protected $YY2TBLSTATE  = 103;
+    protected $YYNLSTATES   = 142;
 
     protected $symbolToName = array(
         "EOF",
@@ -42,10 +42,6 @@ class Parser extends ParserAbstract
         "'%'",
         "'|'",
         "'&'",
-        "'('",
-        "')'",
-        "'['",
-        "']'",
         "'?'",
         "'<'",
         "'>'",
@@ -61,6 +57,11 @@ class Parser extends ParserAbstract
         "T_IS",
         "T_ELSE",
         "T_SCOPE_OPERATOR",
+        "T_PIPE_ARROW",
+        "'('",
+        "')'",
+        "'['",
+        "']'",
         "';'",
         "T_PACKAGE",
         "T_STRING",
@@ -77,156 +78,170 @@ class Parser extends ParserAbstract
     );
 
     protected $tokenToSymbol = array(
-            0,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   41,    7,    9,   42,
-           10,   11,    5,    3,   18,    4,   42,    6,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   17,   29,
-           15,   40,   16,   14,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   12,   42,   13,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   38,    8,   39,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,   42,   42,   42,   42,
-           42,   42,   42,   42,   42,   42,    1,    2,   19,   20,
-           21,   22,   23,   24,   25,   26,   27,   28,   30,   31,
-           32,   33,   34,   35,   36,   37
+            0,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   42,    7,    9,   43,
+           26,   27,    5,    3,   14,    4,   43,    6,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   13,   30,
+           11,   41,   12,   10,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   28,   43,   29,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   39,    8,   40,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+           43,   43,   43,   43,   43,   43,    1,    2,   15,   16,
+           17,   18,   19,   20,   21,   22,   23,   24,   25,   31,
+           32,   33,   34,   35,   36,   37,   38
     );
 
     protected $action = array(
-           13,-32766,    9,-32766,-32766,-32766,   59,    7,    0,   29,
-          158,   61,  161,  160,  162,-32766,   68,-32766,  213,-32766,
-          159,  157,   62,   38,  165,  166,    8,  120,   30,   -1,
-        -32766,   67,   15,   16,   17,   18,   19,   20,   56,  108,
-            7,-32766,-32766,  180,-32766,   57,   32,   33,-32766,   68,
-           66,   58,  181,   27,    5,-32766,   38,   14,   69,-32766,
-          130,  132,  134,  167,   12,   24,  188,  181,   27,   25,
-          133,   26,  207,    6,   23,  193,  194,   34,  165,  166,
-           35,   37,  205,  212,  179,  128,  208,  131,   60,   64,
-           63,  107,  182,  168,   22,  103,   10,   21,   28,   36,
-           11,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-            0,  153,  224,  236,  234,    0,    0,  143,  144,    0,
-            0,    0,    0,    0,    0,    0,  135,   55,  136,  137,
-            0,  169,  170,  225,  237,  235,    0,   31,   88,    0,
-           65
+          162,   74,  165,  164,  166,-32766,-32766,-32766,   62,   72,
+           14,  171,   10,  197,  198,  163,  161,    0,   65,  169,
+          170,   37,  121,   67,    6,   26,   73,   16,   17,   18,
+           19,   20,   21,-32766,  137,-32766,  136,  109,   -1,   68,
+           22,   63,-32766,-32766,-32766,-32766,   38,   46,-32766,-32766,
+           23,    7,  134,  138,-32766,   13,   64,  186,-32766,   69,
+          184,   22,-32766,   40,   41,  185,   35,  192,   46,  214,
+            5,   23,    7,  185,   35,  169,  170,   25,   66,   11,
+           24,   36,   44,  108,    8,  219,   70,   42,    9,  139,
+           61,  140,  141,    0,  173,    0,   15,   34,   32,   33,
+            0,   43,   45,  209,  211,  210,  183,  131,  215,    0,
+            0,    0,  135,  172,  157,  230,  242,  240,    0,  104,
+            0,  147,  148,    0,    0,    0,    0,    0,    0,    0,
+            0,  174,  231,  243,  241,    0,   12,   39,   91,    0,
+           71
     );
 
     protected $actionCheck = array(
-           10,    2,   12,    2,    3,    4,   20,   10,    0,   23,
-           20,   25,   22,   23,   24,    5,   19,   10,   13,   12,
-           30,   31,   36,   26,   34,   35,   10,   37,   10,    0,
-           12,   41,    2,    3,    4,    5,    6,    7,   15,   21,
-           10,   34,   35,    5,   37,   18,    8,    9,   41,   19,
-           18,   22,   14,   15,   17,   37,   26,   10,   24,   41,
-           27,   38,   38,   29,   40,   10,   39,   14,   15,   10,
-           38,   10,   39,   17,   18,   32,   33,   11,   34,   35,
-           11,   11,   11,   11,   11,   11,   11,   29,   21,   21,
-           28,   28,   16,   29,   17,   30,   18,   18,   18,   18,
-           40,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-           -1,   29,   29,   29,   29,   -1,   -1,   31,   31,   -1,
-           -1,   -1,   -1,   -1,   -1,   -1,   38,   38,   38,   38,
-           -1,   39,   39,   39,   39,   39,   -1,   40,   40,   -1,
-           41
+           16,   20,   18,   19,   20,    2,    3,    4,   11,   14,
+           26,   30,   28,   33,   34,   31,   32,    0,   16,   35,
+           36,   19,   38,   21,   13,   14,   42,    2,    3,    4,
+            5,    6,    7,   26,   39,   28,   39,   17,    0,   37,
+           15,   14,   35,   36,    2,   38,   26,   22,   28,   42,
+           25,   26,   23,   39,    5,   41,   18,   12,   38,   24,
+            5,   15,   42,    8,    9,   10,   11,   40,   22,   40,
+           13,   25,   26,   10,   11,   35,   36,   13,   17,   14,
+           14,   14,   14,   24,   26,   29,   17,   27,   26,   39,
+           39,   39,   39,   -1,   40,   -1,   26,   26,   26,   26,
+           -1,   27,   27,   27,   27,   27,   27,   27,   27,   -1,
+           -1,   -1,   30,   30,   30,   30,   30,   30,   -1,   31,
+           -1,   32,   32,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+           -1,   40,   40,   40,   40,   -1,   41,   41,   41,   -1,
+           42
     );
 
     protected $actionBase = array(
-           65,   33,   94,   95,   96,   90,   91,  -10,  -10,  -10,
-          -10,  -10,  -10,  -10,  -10,  -10,  -10,  -10,  -10,  -10,
-          -10,  -10,  -10,  -10,   18,   18,   18,   18,   18,   18,
-           18,   18,   18,   18,   18,   18,   18,   18,   18,   83,
-           75,   74,   84,   85,   30,   30,   30,   30,   30,   30,
-           30,   30,   -1,   24,   24,    7,    7,    7,    7,    7,
-            7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
-           68,   73,   99,    1,    1,  -14,   38,   38,   38,   29,
-           10,   92,   93,   34,   23,   -3,   -3,   -3,   44,   97,
-           55,   89,   53,   53,   59,   32,   98,   27,   60,   53,
-           77,   16,   56,   86,    8,   58,   63,   87,   61,   62,
-           64,   66,   80,   69,   81,   76,   62,   67,   70,   62,
-           47,   62,    5,   79,   62,   82,   71,   78,   88,   72,
-           37,    0,    0,    0,    0,    0,    0,    0,    0,  -10,
-          -10,  -10,  -10,  -10,  -10,    0,    0,    0,    0,    0,
+           88,   29,   92,   93,   94,   52,   53,  -16,  -16,  -16,
+          -16,  -16,  -16,  -16,  -16,  -16,  -16,  -16,  -16,  -16,
+          -16,  -16,  -16,  -16,  -16,  -16,  -16,   85,   81,   80,
+           86,   87,   20,   20,   20,   20,   20,   20,   20,   20,
+           20,   20,   20,   20,   20,   20,   20,   25,   25,   25,
+           25,   25,   25,   25,   25,   25,   42,   14,   14,    3,
+            3,    7,    7,    7,    7,    7,    7,    7,    7,    7,
+            7,    7,    7,    7,    7,   69,   79,   98,    2,   55,
+           55,   55,   38,   46,   46,   46,   49,   54,   91,  -19,
+           -3,   40,   96,   72,   51,   63,   63,   73,   -5,   97,
+           27,   95,   64,   11,   89,   17,   82,   59,   90,   71,
+           35,   83,   60,   67,   74,   68,   45,   35,   61,   75,
+           35,   70,   35,   56,   66,   35,   84,   58,   62,   76,
+           65,   50,   77,   78,   57,    0,    0,    0,    0,    0,
+            0,    0,    0,  -16,  -16,  -16,  -16,  -16,  -16,    0,
             0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-            0,    0,  -10,  -10,  -10,  -10,  -10,  -10,  -10,  -10,
-          -10,  -10,  -10,  -10,  -10,  -10,  -10,   30,   30,   30,
-           30,   30,    0,    0,    0,    0,    0,    0,    0,    0,
-           30,   38,   38,  -10,  -10,  -10,  -10,  -10,  -10,  -10,
-          -10,  -10,  -10,  -10,  -10,  -10,  -10,  -10,   38,   38,
-           38,   30,   30,   67,    0,    0,    0,   43,   38,   43,
-           43,   62,   62,    0,    0,    0,    0,   62,   62,   62,
-            0,    0,   62,    0,   62,    0,   62,    0,   62,   62
+            0,    0,    0,    0,    0,    0,    0,    0,    0,   25,
+           25,   25,   25,   25,  -16,  -16,  -16,  -16,  -16,  -16,
+          -16,  -16,  -16,  -16,  -16,  -16,  -16,  -16,  -16,    0,
+            0,    0,    0,    0,    0,    0,    0,    0,   25,   55,
+           55,   25,   25,  -16,  -16,  -16,  -16,  -16,  -16,  -16,
+          -16,  -16,  -16,  -16,  -16,  -16,  -16,   55,   55,   55,
+           61,    0,    0,    0,  -20,    0,    0,    0,   55,  -20,
+          -20,   35,   35,    0,   35,   35,   35,    0,    0,   35,
+            0,   35,    0,   35,   35
     );
 
     protected $actionDefault = array(
-        32767,32767,32767,32767,32767,32767,32767,   89,   89,32767,
+        32767,32767,32767,32767,32767,32767,32767,   91,   91,   91,
         32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,
-        32767,   77,32767,32767,   61,   61,   47,   47,32767,32767,
-        32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,
-        32767,32767,32767,32767,   65,   79,   16,   93,   78,   92,
-          101,  100,   85,32767,32767,32767,32767,32767,32767,32767,
-        32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,
-        32767,32767,32767,   80,   81,32767,   36,   49,   48,   57,
-           68,   57,   57,32767,32767,   83,   82,   84,32767,32767,
-        32767,32767,   39,   40,32767,32767,   53,32767,   64,   45,
-           71,32767,32767,32767,32767,32767,    4,32767,32767,   37,
-        32767,32767,   60,32767,   46,32767,   26,32767,32767,   25,
-        32767,   71,32767,   76,   72,32767,32767,   88,32767,32767,
-        32767,    3,   34,   34,    8,   95,    8,    8
+        32767,32767,32767,32767,   79,32767,32767,32767,32767,32767,
+        32767,32767,   61,   61,   47,   47,32767,32767,32767,32767,
+        32767,32767,32767,32767,32767,32767,32767,   65,   81,   16,
+        32767,   95,   80,   94,  103,  102,   87,32767,32767,   82,
+           83,32767,32767,32767,32767,32767,32767,32767,32767,32767,
+        32767,32767,32767,32767,32767,32767,32767,32767,32767,   36,
+           49,   48,   57,   85,   84,   86,   71,   57,   57,32767,
+        32767,32767,32767,32767,32767,   39,   40,32767,32767,   53,
+        32767,   64,   74,32767,32767,32767,32767,    4,32767,32767,
+           37,32767,32767,   60,32767,   46,32767,   26,32767,32767,
+           25,32767,   74,32767,   78,   75,32767,   66,   66,32767,
+           90,32767,32767,32767,32767,    3,   34,   34,    8,   97,
+            8,    8
     );
 
     protected $goto = array(
-          100,  100,  129,  100,   77,   77,  228,   70,   71,   76,
-           92,   93,   53,   99,   78,   54,   80,  109,  109,  109,
-          109,  109,  109,  109,  109,  109,  109,  109,  109,  109,
-          109,  109,  176,  176,  176,  176,  176,  176,  176,  176,
-          176,  176,  176,  176,  176,  176,  176,  118,   96,  116,
-           96,   83,   89,   90,   84,   91,  156,   94,   98,  119,
-          124,  101,   50,    3,    4,  115,   42,   43,   47,   47,
-           45,   47,   44,   39,   40,   41,   52,   73,   74,   85,
-           86,   87,   48,   49,   51,  200,  197,  189,  110,  149,
-           75,   82,    0,    0,    0,    0,  192
+          102,  102,  102,  234,  102,   80,   80,  119,   75,   76,
+           79,   95,   96,   57,  187,   81,   58,   86,  132,  133,
+          127,  128,    3,    4,  116,  110,  110,  110,  110,  110,
+          110,  110,  110,  110,  110,  110,  110,  110,  110,  110,
+          204,  201,  193,  111,  153,   78,   88,    0,    0,    0,
+            0,    0,    0,    0,   99,  117,   99,   89,   92,   93,
+           90,   94,  160,   97,  101,  120,  125,   54,   49,   49,
+           49,   30,   31,    0,    0,    0,   48,    0,   47,   27,
+           28,   29,   56,   59,   60,   83,   84,   85,   50,   50,
+           52,   53,   55,  180,  180,  180,  180,  180,  180,  180,
+          180,  180,  180,  180,  180,  180,  180,  180,    0,    0,
+            0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+            0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+            0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+            0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+            0,    0,  196
     );
 
     protected $gotoCheck = array(
-           16,   16,   33,   16,   23,   23,   38,   23,   23,   23,
-           23,   23,   23,   23,   23,   23,   23,   16,   16,   16,
+           16,   16,   16,   39,   16,   23,   23,   28,   23,   23,
+           23,   23,   23,   23,   23,   23,   23,   23,   33,   33,
+           32,   32,    6,    6,   24,   16,   16,   16,   16,   16,
            16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   19,   19,   19,   19,   19,   19,   19,   19,
-           19,   19,   19,   19,   19,   19,   19,   28,   16,   16,
-           16,   16,   16,   16,   16,   16,   16,   16,   16,   16,
-           16,   16,   15,    6,    6,   24,   15,   15,   15,   15,
+           31,   29,   27,   17,   10,   20,   21,   -1,   -1,   -1,
+           -1,   -1,   -1,   -1,   16,   16,   16,   16,   16,   16,
+           16,   16,   16,   16,   16,   16,   16,   15,   15,   15,
+           15,   15,   15,   -1,   -1,   -1,   15,   -1,   15,   15,
            15,   15,   15,   15,   15,   15,   15,   15,   15,   15,
-           15,   15,   15,   15,   15,   31,   29,   27,   17,   10,
-           20,   21,   -1,   -1,   -1,   -1,   19
+           15,   15,   15,   19,   19,   19,   19,   19,   19,   19,
+           19,   19,   19,   19,   19,   19,   19,   19,   -1,   -1,
+           -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+           -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+           -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+           -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+           -1,   -1,   19
     );
 
     protected $gotoBase = array(
-            0,    0,    0,    0,    0,    0,  -73,    0,    0,    0,
-           10,    0,    0,    0,    0,   61,   -7,   19,    0,    8,
-           11,  -42,    0,  -22,   38,    0,    0,   30,   22,   32,
-            0,   57,    0,   -6,    0,    0,    0,    0,   -4,    0,
-            0
+            0,    0,    0,    0,    0,    0, -118,    0,    0,    0,
+          -38,    0,    0,    0,    0,   66,   -7,  -31,    0,   61,
+          -37,  -91,    0,  -29,  -11,    0,    0,  -21,  -26,  -17,
+            0,    4,   -2,   10,    0,    0,    0,    0,    0,   -8,
+            0,    0
     );
 
     protected $gotoDefault = array(
-        -32768,  104,  105,   79,  140,  106,    2,  145,  147,  148,
-          173,  150,  151,  152,  125,   46,  121,  155,   95,  211,
-          117,   81,  171,   72,  113,  114,   97,  190,  111,  196,
-          112,  201,  204,  126,    1,  122,  123,  127,  229,  232,
-          102
+        -32768,  105,  106,   82,  144,  107,    2,  149,  151,  152,
+          177,  154,  155,  156,  126,   51,  122,  159,   98,  218,
+          118,   87,  175,   77,  114,  115,  100,  194,  112,  200,
+          113,  205,  208,  129,  212,    1,  123,  124,  130,  235,
+          238,  103
     );
 
     protected $ruleToNonTerminal = array(
@@ -237,10 +252,10 @@ class Parser extends ParserAbstract
            23,   23,   23,   23,   23,   23,   24,   24,   25,   25,
             9,   26,   26,   27,   27,   20,   20,   20,   10,   11,
            28,   28,   30,   30,   31,   31,   15,   15,   15,   15,
-           15,   15,   15,   15,   15,   15,   35,   35,   36,   36,
-           32,   32,   32,   32,   32,   32,   29,   29,   33,   33,
-           37,   37,   38,   38,   34,   34,   39,   39,   39,   39,
-           40,   40
+           32,   32,   32,   32,   32,   32,   32,   32,   36,   36,
+           37,   37,   34,   34,   34,   34,   34,   34,   29,   29,
+           33,   33,   38,   38,   39,   39,   35,   35,   40,   40,
+           40,   40,   41,   41
     );
 
     protected $ruleToLength = array(
@@ -250,11 +265,11 @@ class Parser extends ParserAbstract
             5,    6,    8,    2,    0,    1,    5,    1,    1,    3,
             3,    3,    2,    2,    4,    5,    1,    0,    3,    1,
             6,    3,    1,    1,    3,    1,    1,    0,    8,   10,
-            1,    0,    3,    1,    3,    5,    1,    4,    3,    7,
-            3,    1,    2,    1,    6,    3,    1,    2,    3,    1,
-            3,    3,    3,    3,    3,    3,    3,    3,    1,    0,
-            3,    1,    3,    1,    2,    0,    4,    5,    4,    5,
-            3,    1
+            1,    0,    3,    1,    3,    5,    1,    4,    6,    6,
+            1,    3,    7,    3,    1,    2,    1,    3,    1,    2,
+            3,    1,    3,    3,    3,    3,    3,    3,    3,    3,
+            1,    0,    3,    1,    3,    1,    2,    0,    4,    5,
+            4,    5,    3,    1
     );
 
     protected function reduceRule0()
@@ -615,42 +630,42 @@ class Parser extends ParserAbstract
 
     protected function reduceRule68()
     {
-        $this->semValue = new Node\Expr\Is($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Pipe($this->semStack[$this->stackPos-(6-1)], $this->semStack[$this->stackPos-(6-3)], $this->semStack[$this->stackPos-(6-5)], $this->startAttributeStack[$this->stackPos-(6-1)] + $this->endAttributes);
     }
 
     protected function reduceRule69()
     {
-        $this->semValue = new Node\Expr\Match($this->semStack[$this->stackPos-(7-3)], $this->semStack[$this->stackPos-(7-6)], $this->startAttributeStack[$this->stackPos-(7-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\MethodCall($this->semStack[$this->stackPos-(6-1)], $this->semStack[$this->stackPos-(6-3)], $this->semStack[$this->stackPos-(6-5)], $this->startAttributeStack[$this->stackPos-(6-1)] + $this->endAttributes);
     }
 
     protected function reduceRule70()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(3-2)];
+        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
     }
 
     protected function reduceRule71()
     {
-        $this->semValue = new Node\Expr\IdentifierReference($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Is($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule72()
     {
-        $this->semValue = new Node\Expr\Variable($this->semStack[$this->stackPos-(2-2)], $this->startAttributeStack[$this->stackPos-(2-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Match($this->semStack[$this->stackPos-(7-3)], $this->semStack[$this->stackPos-(7-6)], $this->startAttributeStack[$this->stackPos-(7-1)] + $this->endAttributes);
     }
 
     protected function reduceRule73()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
+        $this->semValue = $this->semStack[$this->stackPos-(3-2)];
     }
 
     protected function reduceRule74()
     {
-        $this->semValue = new Node\Expr\MethodCall($this->semStack[$this->stackPos-(6-1)], $this->semStack[$this->stackPos-(6-3)], $this->semStack[$this->stackPos-(6-5)], $this->startAttributeStack[$this->stackPos-(6-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\IdentifierReference($this->semStack[$this->stackPos-(1-1)], $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
     }
 
     protected function reduceRule75()
     {
-        $this->semValue = new Node\Expr\Array_($this->semStack[$this->stackPos-(3-2)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+        $this->semValue = new Node\Expr\Variable($this->semStack[$this->stackPos-(2-2)], $this->startAttributeStack[$this->stackPos-(2-1)] + $this->endAttributes);
     }
 
     protected function reduceRule76()
@@ -660,128 +675,138 @@ class Parser extends ParserAbstract
 
     protected function reduceRule77()
     {
-        $this->semValue = $this->semStack[$this->stackPos-(2-1)];
+        $this->semValue = new Node\Expr\Array_($this->semStack[$this->stackPos-(3-2)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
     protected function reduceRule78()
     {
-        $this->semStack[$this->stackPos-(3-1)][] = $this->semStack[$this->stackPos-(3-3)];
-        $this->semValue = $this->semStack[$this->stackPos-(3-1)];
+        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
     }
 
     protected function reduceRule79()
     {
-        $this->semValue = array($this->semStack[$this->stackPos-(1-1)]);
+        $this->semValue = $this->semStack[$this->stackPos-(2-1)];
     }
 
     protected function reduceRule80()
-    {
-        $this->semValue = new Node\Expr\BinaryOp\Plus($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
-    }
-
-    protected function reduceRule81()
-    {
-        $this->semValue = new Node\Expr\BinaryOp\Minus($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
-    }
-
-    protected function reduceRule82()
-    {
-        $this->semValue = new Node\Expr\BinaryOp\Div($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
-    }
-
-    protected function reduceRule83()
-    {
-        $this->semValue = new Node\Expr\BinaryOp\Mul($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
-    }
-
-    protected function reduceRule84()
-    {
-        $this->semValue = new Node\Expr\BinaryOp\Mod($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
-    }
-
-    protected function reduceRule85()
-    {
-        $this->semValue = new Node\Expr\BinaryOp\Equals($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
-    }
-
-    protected function reduceRule86()
-    {
-        $this->semValue = [$this->semStack[$this->stackPos-(3-2)]];
-    }
-
-    protected function reduceRule87()
-    {
-        $this->semValue = $this->semStack[$this->stackPos-(3-2)];
-    }
-
-    protected function reduceRule88()
-    {
-        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
-    }
-
-    protected function reduceRule89()
-    {
-        $this->semValue = [];
-    }
-
-    protected function reduceRule90()
     {
         $this->semStack[$this->stackPos-(3-1)][] = $this->semStack[$this->stackPos-(3-3)];
         $this->semValue = $this->semStack[$this->stackPos-(3-1)];
     }
 
-    protected function reduceRule91()
+    protected function reduceRule81()
     {
         $this->semValue = array($this->semStack[$this->stackPos-(1-1)]);
     }
 
+    protected function reduceRule82()
+    {
+        $this->semValue = new Node\Expr\BinaryOp\Plus($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule83()
+    {
+        $this->semValue = new Node\Expr\BinaryOp\Minus($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule84()
+    {
+        $this->semValue = new Node\Expr\BinaryOp\Div($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule85()
+    {
+        $this->semValue = new Node\Expr\BinaryOp\Mul($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule86()
+    {
+        $this->semValue = new Node\Expr\BinaryOp\Mod($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule87()
+    {
+        $this->semValue = new Node\Expr\BinaryOp\Equals($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule88()
+    {
+        $this->semValue = [$this->semStack[$this->stackPos-(3-2)]];
+    }
+
+    protected function reduceRule89()
+    {
+        $this->semValue = $this->semStack[$this->stackPos-(3-2)];
+    }
+
+    protected function reduceRule90()
+    {
+        $this->semValue = $this->semStack[$this->stackPos-(1-1)];
+    }
+
+    protected function reduceRule91()
+    {
+        $this->semValue = [];
+    }
+
     protected function reduceRule92()
     {
-        $this->semValue = new Node\Arg($this->semStack[$this->stackPos-(3-3)], $this->semStack[$this->stackPos-(3-1)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+        $this->semStack[$this->stackPos-(3-1)][] = $this->semStack[$this->stackPos-(3-3)];
+        $this->semValue = $this->semStack[$this->stackPos-(3-1)];
     }
 
     protected function reduceRule93()
     {
-        $this->semValue = new Node\Arg($this->semStack[$this->stackPos-(1-1)], null, $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
+        $this->semValue = array($this->semStack[$this->stackPos-(1-1)]);
     }
 
     protected function reduceRule94()
+    {
+        $this->semValue = new Node\Arg($this->semStack[$this->stackPos-(3-3)], $this->semStack[$this->stackPos-(3-1)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule95()
+    {
+        $this->semValue = new Node\Arg($this->semStack[$this->stackPos-(1-1)], null, $this->startAttributeStack[$this->stackPos-(1-1)] + $this->endAttributes);
+    }
+
+    protected function reduceRule96()
     {
         $this->semStack[$this->stackPos-(2-1)][] = $this->semStack[$this->stackPos-(2-2)];
         $this->semValue = $this->semStack[$this->stackPos-(2-1)];
     }
 
-    protected function reduceRule95()
+    protected function reduceRule97()
     {
         $this->semValue = array();
     }
 
-    protected function reduceRule96()
+    protected function reduceRule98()
     {
         $this->semValue = new Node\Expr\MatchEntry($this->semStack[$this->stackPos-(4-1)], [$this->semStack[$this->stackPos-(4-3)]], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes);
     }
 
-    protected function reduceRule97()
+    protected function reduceRule99()
     {
         $this->semValue = new Node\Expr\MatchEntry($this->semStack[$this->stackPos-(5-1)], $this->semStack[$this->stackPos-(5-4)], $this->startAttributeStack[$this->stackPos-(5-1)] + $this->endAttributes);
     }
 
-    protected function reduceRule98()
+    protected function reduceRule100()
     {
         $this->semValue = new Node\Expr\MatchEntry(null, [$this->semStack[$this->stackPos-(4-3)]], $this->startAttributeStack[$this->stackPos-(4-1)] + $this->endAttributes);
     }
 
-    protected function reduceRule99()
+    protected function reduceRule101()
     {
         $this->semValue = new Node\Expr\MatchEntry(null, $this->semStack[$this->stackPos-(5-4)], $this->startAttributeStack[$this->stackPos-(5-1)] + $this->endAttributes);
     }
 
-    protected function reduceRule100()
+    protected function reduceRule102()
     {
         $this->semValue = new Node\Expr\BinaryOp\BooleanOr($this->semStack[$this->stackPos-(3-1)], $this->semStack[$this->stackPos-(3-3)], $this->startAttributeStack[$this->stackPos-(3-1)] + $this->endAttributes);
     }
 
-    protected function reduceRule101()
+    protected function reduceRule103()
     {
         $this->semValue = $this->semStack[$this->stackPos-(1-1)];
     }

@@ -5,8 +5,10 @@ namespace Prerano\AST\Node\Expr;
 use Prerano\AST\Node;
 use Prerano\AST\Node\Expr;
 
-class IdentifierReference extends Expr
+class Pipe extends Expr
 {
+    public $param;
+    public $args;
     public $name;
 
     /**
@@ -16,19 +18,21 @@ class IdentifierReference extends Expr
      * @param Expr  $expr       Expression
      * @param array $attributes Additional attributes
      */
-    public function __construct(Node\Name $name, array $attributes = array())
+    public function __construct(Node\Expr $param, Node\Expr $name, array $args, array $attributes = array())
     {
         parent::__construct($attributes);
+        $this->param = $param;
         $this->name = $name;
+        $this->addArgs(...$args);
+    }
+
+    public function addArgs(Node\Arg ...$args)
+    {
+        $this->args = $args;
     }
 
     public function getSubNodeNames()
     {
-        return array('name');
-    }
-
-    public function toString(): string
-    {
-        return $this->name->toString();
+        return array('param', 'name', 'args');
     }
 }

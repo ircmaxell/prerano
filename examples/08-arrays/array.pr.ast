@@ -27,10 +27,12 @@ Package Prerano::Examples::Arrays
                 value(3)
             ]
         name:
-          Name
-            parts [
-              count
-            ]
+          Expr_IdentifierReference
+            name:
+              Name
+                parts [
+                  count
+                ]
         args [
         ]
       Expr_MethodCall
@@ -45,10 +47,12 @@ Package Prerano::Examples::Arrays
                 value(3)
             ]
         name:
-          Name
-            parts [
-              slice
-            ]
+          Expr_IdentifierReference
+            name:
+              Name
+                parts [
+                  slice
+                ]
         args [
           Arg
             value:

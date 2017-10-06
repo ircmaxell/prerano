@@ -33,26 +33,26 @@ final class __PRERANO_CODE__
     /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃isString($arg)
     {
-        $_162 = is_string($arg);
-        return $_162;
+        $_176 = is_string($arg);
+        return $_176;
     }
     /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃isInt($arg)
     {
-        $_166 = is_int($arg);
-        return $_166;
+        $_180 = is_int($arg);
+        return $_180;
     }
     /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃isNumeric($arg)
     {
-        $_170 = is_int($arg) || (is_float($arg) || is_int($arg));
-        return $_170;
+        $_184 = is_int($arg) || (is_float($arg) || is_int($arg));
+        return $_184;
     }
     /** fn(any)(true|false) */
     public function Prerano܃܃Examples܃܃TypeChecks܃܃is0or1($arg)
     {
-        $_174 = $arg === 0 || $arg === 1;
-        return $_174;
+        $_188 = $arg === 0 || $arg === 1;
+        return $_188;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃TypeChecks܃܃∫();

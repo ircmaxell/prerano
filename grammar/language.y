@@ -5,17 +5,20 @@
 %left '+' '-'
 %left '*' '/' '%'
 %left '|' '&'
-%nonassoc '(' ')' '[' ']'
 %left '?'
 %right '<' '>'
 
+
 %left ':'
 %left ','
-%right T_SKINNY_ARROW
+%left T_SKINNY_ARROW
 %right T_TYPE T_FUNCTION T_IMPORT T_ON T_AS T_CLASS
 %left T_IS
 %right T_ELSE
 %left T_SCOPE_OPERATOR
+%left T_PIPE_ARROW
+%nonassoc '(' ')' '[' ']'
+
 %left ';'
 
 
@@ -38,6 +41,7 @@
 %token T_IMPORT
 %token T_AS
 %token T_CLASS
+%token T_PIPE_ARROW
 
 %%
 
@@ -193,16 +197,21 @@ parameter:
 ;
 
 expr:
-      binary_expr                                           { $$ = $1; }
-    | expr '(' argument_list ')'                            { $$ = Node\Expr\FuncCall[$1, $3]; }
-    | expr T_IS type_expr                                   { $$ = Node\Expr\Is[$1, $3]; }
-    | T_MATCH '(' expr ')' '{' match_list '}'               { $$ = Node\Expr\Match[$3, $6]; }
-    | '(' expr ')'                                          { $$ = $2; }  
-    | identifier                                            { $$ = Node\Expr\IdentifierReference[$1]; }
-    | '$' identifier                                        { $$ = Node\Expr\Variable[$2]; }
-    | scalar                                                { $$ = $1; }
-    | expr T_SKINNY_ARROW identifier '(' argument_list ')'  { $$ = Node\Expr\MethodCall[$1, $3, $5]; }
-    | '[' expr_list ']'                                     { $$ = Node\Expr\Array_[$2]; }
+      non_call_expr                                             { $$ = $1; }
+    | expr '(' argument_list ')'                                { $$ = Node\Expr\FuncCall[$1, $3]; }
+    | expr T_PIPE_ARROW non_call_expr '(' argument_list ')'     { $$ = Node\Expr\Pipe[$1, $3, $5]; }
+    | expr T_SKINNY_ARROW non_call_expr '(' argument_list ')'   { $$ = Node\Expr\MethodCall[$1, $3, $5]; }
+;
+
+non_call_expr:
+      binary_expr                                               { $$ = $1; }
+    | expr T_IS type_expr                                       { $$ = Node\Expr\Is[$1, $3]; }
+    | T_MATCH '(' expr ')' '{' match_list '}'                   { $$ = Node\Expr\Match[$3, $6]; }
+    | '(' expr ')'                                              { $$ = $2; }  
+    | identifier                                                { $$ = Node\Expr\IdentifierReference[$1]; }
+    | '$' identifier                                            { $$ = Node\Expr\Variable[$2]; }
+    | scalar                                                    { $$ = $1; }
+    | '[' expr_list ']'                                         { $$ = Node\Expr\Array_[$2]; }
 ;
 
 expr_list:

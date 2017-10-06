@@ -18,12 +18,13 @@ final class Tokens
     const T_IS = 265;
     const T_ELSE = 266;
     const T_SCOPE_OPERATOR = 267;
-    const T_PACKAGE = 268;
-    const T_STRING = 269;
-    const T_PROTECTED = 270;
-    const T_PUBLIC = 271;
-    const T_LNUMBER = 272;
-    const T_DNUMBER = 273;
-    const T_ENUM = 274;
-    const T_MATCH = 275;
+    const T_PIPE_ARROW = 268;
+    const T_PACKAGE = 269;
+    const T_STRING = 270;
+    const T_PROTECTED = 271;
+    const T_PUBLIC = 272;
+    const T_LNUMBER = 273;
+    const T_DNUMBER = 274;
+    const T_ENUM = 275;
+    const T_MATCH = 276;
 }
