@@ -33,21 +33,21 @@ final class __PRERANO_CODE__
     /** fn()array<any> */
     public function Prerano܃܃Examples܃܃Arrays܃܃test()
     {
-        $_103 = $this->Prerano܃܃Examples܃܃Arrays܃܃count→array≺any≻(array(1, 2, 3));
-        $_110 = $this->Prerano܃܃Examples܃܃Arrays܃܃slice→array≺any≻(array(1, 2, 3), 1, 2);
-        return $_110;
+        $_111 = $this->Prerano܃܃Examples܃܃Arrays܃܃count→array≺any≻(array(1, 2, 3));
+        $_118 = $this->Prerano܃܃Examples܃܃Arrays܃܃slice→array≺any≻(array(1, 2, 3), 1, 2);
+        return $_118;
     }
     /** array<any>->fn()int */
     public function Prerano܃܃Examples܃܃Arrays܃܃count→array≺any≻($_)
     {
-        $_115 = count($_);
-        return $_115;
+        $_123 = count($_);
+        return $_123;
     }
     /** array<any>->fn(int,int)array<any> */
     public function Prerano܃܃Examples܃܃Arrays܃܃slice→array≺any≻($_, $offset, $length)
     {
-        $_124 = array_slice($_, $offset, $length);
-        return $_124;
+        $_132 = array_slice($_, $offset, $length);
+        return $_132;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃Arrays܃܃∫();

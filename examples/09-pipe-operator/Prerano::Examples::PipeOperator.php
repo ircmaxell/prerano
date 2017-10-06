@@ -39,9 +39,12 @@ final class __PRERANO_CODE__
     /** fn()none */
     public function Prerano܃܃Examples܃܃PipeOperator܃܃test()
     {
-        $_12 = $this->Prerano܃܃Examples܃܃PipeOperator܃܃add(1, 2);
-        $_15 = $this->Prerano܃܃Examples܃܃PipeOperator܃܃add($_12, 3);
-        return $_15;
+        $_13 = $this->Prerano܃܃Examples܃܃PipeOperator܃܃add(1, 2);
+        $_16 = $this->Prerano܃܃Examples܃܃PipeOperator܃܃add($_13, 3);
+        $_17 = 1 + $_16;
+        $_22 = $this->Prerano܃܃Examples܃܃PipeOperator܃܃add(1, 2);
+        $_23 = 1 + $_22;
+        return $_23;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃PipeOperator܃܃∫();

@@ -33,64 +33,64 @@ final class __PRERANO_CODE__
     /** fn(any)int */
     public function Prerano܃܃Examples܃܃Matching܃܃length($input)
     {
-        $_31 = is_string($input);
-        if ($_31) {
-            $_36 = strlen($input);
-            $_95 = $_36;
+        $_39 = is_string($input);
+        if ($_39) {
+            $_44 = strlen($input);
+            $_103 = $_44;
         } else {
-            $_38 = is_array($input);
-            if ($_38) {
-                $_43 = count($input);
-                $_95 = $_43;
+            $_46 = is_array($input);
+            if ($_46) {
+                $_51 = count($input);
+                $_103 = $_51;
             } else {
-                $_45 = is_int($input);
-                if ($_45) {
-                    $_95 = $input;
+                $_53 = is_int($input);
+                if ($_53) {
+                    $_103 = $input;
                 } else {
-                    $_95 = 0;
+                    $_103 = 0;
                 }
             }
         }
-        return $_95;
+        return $_103;
     }
     /** fn(int)int */
     public function Prerano܃܃Examples܃܃Matching܃܃foo($input)
     {
-        $_57 = $input === 0;
-        if ($_57) {
-            $_96 = 1;
+        $_65 = $input === 0;
+        if ($_65) {
+            $_104 = 1;
         } else {
-            $_62 = $input === 1;
-            if ($_62) {
-                $_96 = 2;
+            $_70 = $input === 1;
+            if ($_70) {
+                $_104 = 2;
             } else {
-                $_96 = 3;
+                $_104 = 3;
             }
         }
-        return $_96;
+        return $_104;
     }
     /** fn(int)int */
     public function Prerano܃܃Examples܃܃Matching܃܃mod2($input)
     {
-        $_81 = $this->Prerano܃܃Examples܃܃Matching܃܃isEven($input);
-        if ($_81) {
-            $_97 = 0;
+        $_89 = $this->Prerano܃܃Examples܃܃Matching܃܃isEven($input);
+        if ($_89) {
+            $_105 = 0;
         } else {
-            $_88 = $input === 1;
-            if ($_88) {
-                $_97 = 0;
+            $_96 = $input === 1;
+            if ($_96) {
+                $_105 = 0;
             } else {
-                $_97 = 1;
+                $_105 = 1;
             }
         }
-        return $_97;
+        return $_105;
     }
     /** fn(int)(true|false) */
     public function Prerano܃܃Examples܃܃Matching܃܃isEven($i)
     {
-        $_73 = $i % 2;
-        $_75 = $_73 === 0;
-        return $_75;
+        $_81 = $i % 2;
+        $_83 = $_81 === 0;
+        return $_83;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃Matching܃܃∫();

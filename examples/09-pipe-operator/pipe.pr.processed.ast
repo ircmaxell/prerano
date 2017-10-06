@@ -67,8 +67,50 @@ Package Prerano::Examples::PipeOperator
     parameters [
     ]
     body [
-      Expr_Pipe
-        param:
+      Expr_BinaryOp_Plus
+        left:
+          Scalar_LNumber
+            value(1)
+        right:
+          Expr_Pipe
+            param:
+              Expr_Pipe
+                param:
+                  Scalar_LNumber
+                    value(1)
+                name:
+                  Expr_IdentifierReference
+                    name:
+                      Name
+                        parts [
+                          add
+                        ]
+                args [
+                  Arg
+                    value:
+                      Scalar_LNumber
+                        value(2)
+                    name()
+                ]
+            name:
+              Expr_IdentifierReference
+                name:
+                  Name
+                    parts [
+                      add
+                    ]
+            args [
+              Arg
+                value:
+                  Scalar_LNumber
+                    value(3)
+                name()
+            ]
+      Expr_BinaryOp_Plus
+        left:
+          Scalar_LNumber
+            value(1)
+        right:
           Expr_Pipe
             param:
               Scalar_LNumber
@@ -87,18 +129,4 @@ Package Prerano::Examples::PipeOperator
                     value(2)
                 name()
             ]
-        name:
-          Expr_IdentifierReference
-            name:
-              Name
-                parts [
-                  add
-                ]
-        args [
-          Arg
-            value:
-              Scalar_LNumber
-                value(3)
-            name()
-        ]
     ]

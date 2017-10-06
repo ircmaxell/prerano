@@ -33,14 +33,14 @@ final class __PRERANO_CODE__
     /** fn(int,int)int */
     public function Prerano܃܃Examples܃܃CallingPHPFunctions܃܃intdiv($dividend, $divisor)
     {
-        $_22 = intdiv($dividend, $divisor);
-        return $_22;
+        $_30 = intdiv($dividend, $divisor);
+        return $_30;
     }
     /** fn()none */
     public function __construct()
     {
-        $_27 = $this->Prerano܃܃Examples܃܃CallingPHPFunctions܃܃intdiv(3, 2);
-        return $_27;
+        $_35 = $this->Prerano܃܃Examples܃܃CallingPHPFunctions܃܃intdiv(3, 2);
+        return $_35;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃CallingPHPFunctions܃܃∫();
