@@ -33,34 +33,34 @@ final class __PRERANO_CODE__
     /** fn()none */
     public function __construct()
     {
-        $_144 = $this->Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int(1);
-        return $_144;
+        $_150 = $this->Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int(1);
+        return $_150;
     }
     /** int->fn()int */
     public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃next→int($_)
     {
-        $_149 = $_ + 1;
-        return $_149;
+        $_155 = $_ + 1;
+        return $_155;
     }
     /** int->fn()int */
     public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃prev→int($_)
     {
-        $_154 = $_ - 1;
-        return $_154;
+        $_160 = $_ - 1;
+        return $_160;
     }
     /** int->fn()(true|false) */
     public function Prerano܃܃Examples܃܃ExpressionFunctions܃܃even→int($_)
     {
-        $_160 = $_ % 2;
-        $_162 = $_160 === 0;
-        if ($_162) {
+        $_166 = $_ % 2;
+        $_168 = $_166 === 0;
+        if ($_168) {
         } else {
-            $_169 = $_ % 2;
-            $_171 = $_169 === 1;
-            if ($_171) {
+            $_175 = $_ % 2;
+            $_177 = $_175 === 1;
+            if ($_177) {
             }
         }
-        return $_177;
+        return $_183;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃ExpressionFunctions܃܃∫();

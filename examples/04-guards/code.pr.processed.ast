@@ -68,6 +68,37 @@ Package Prerano::Examples::PublicFunctions
           Expr_Type_Value
             value()
     ]
+  Stmt_Type
+    name:
+      Name
+        parts [
+          numeric
+        ]
+    type:
+      Expr_Type_Union
+        left:
+          Expr_Type_Union
+            left:
+              Expr_Type_Named
+                name:
+                  Name
+                    parts [
+                      int
+                    ]
+            right:
+              Expr_Type_Named
+                name:
+                  Name
+                    parts [
+                      string
+                    ]
+        right:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  float
+                ]
   Stmt_Function
     name:
       Name
@@ -104,5 +135,71 @@ Package Prerano::Examples::PublicFunctions
           Name
             parts [
               status
+            ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          decode2
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(status)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  STATUS
+                ]
+        default()
+    ]
+    body [
+      Expr_Variable
+        name:
+          Name
+            parts [
+              status
+            ]
+    ]
+  Stmt_Function
+    name:
+      Name
+        parts [
+          decode3
+        ]
+    returnType:
+      Expr_Type_Named
+        name:
+          Name
+            parts [
+              int
+            ]
+    parameters [
+      Stmt_Parameter
+        name(value)
+        type:
+          Expr_Type_Named
+            name:
+              Name
+                parts [
+                  numeric
+                ]
+        default()
+    ]
+    body [
+      Expr_Variable
+        name:
+          Name
+            parts [
+              value
             ]
     ]

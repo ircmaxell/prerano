@@ -2,7 +2,7 @@
 
 final class __PRERANO_METADATA__
 {
-    const HEADERS = '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';
+    const HEADERS = 'YTozOntzOjY6InB1YmxpYyI7YToxOntzOjY6ImdldE9uZSI7TzoyMToiUHJlcmFub1xMYW5ndWFnZVxUeXBlIjo0OntzOjc6IgAqAHR5cGUiO2k6ODE5MjtzOjEyOiIAKgBjbGFzc05hbWUiO3M6MDoiIjtzOjExOiIAKgBzdWJUeXBlcyI7YToxOntpOjA7TzoyMToiUHJlcmFub1xMYW5ndWFnZVxUeXBlIjo0OntzOjc6IgAqAHR5cGUiO2k6NDtzOjEyOiIAKgBjbGFzc05hbWUiO3M6MDoiIjtzOjExOiIAKgBzdWJUeXBlcyI7YTowOnt9czo1OiJ2YWx1ZSI7Tjt9fXM6NToidmFsdWUiO047fX1zOjk6InByb3RlY3RlZCI7YTowOnt9czo3OiJwcml2YXRlIjthOjI6e3M6MzoiaW5jIjtPOjIxOiJQcmVyYW5vXExhbmd1YWdlXFR5cGUiOjQ6e3M6NzoiACoAdHlwZSI7aTo4MTkyO3M6MTI6IgAqAGNsYXNzTmFtZSI7czowOiIiO3M6MTE6IgAqAHN1YlR5cGVzIjthOjI6e2k6MDtPOjIxOiJQcmVyYW5vXExhbmd1YWdlXFR5cGUiOjQ6e3M6NzoiACoAdHlwZSI7aTo0O3M6MTI6IgAqAGNsYXNzTmFtZSI7czowOiIiO3M6MTE6IgAqAHN1YlR5cGVzIjthOjA6e31zOjU6InZhbHVlIjtOO31pOjE7TzoyMToiUHJlcmFub1xMYW5ndWFnZVxUeXBlIjo0OntzOjc6IgAqAHR5cGUiO2k6NDtzOjEyOiIAKgBjbGFzc05hbWUiO3M6MDoiIjtzOjExOiIAKgBzdWJUeXBlcyI7YTowOnt9czo1OiJ2YWx1ZSI7Tjt9fXM6NToidmFsdWUiO047fXM6ODoiX19tYWluX18iO086MjE6IlByZXJhbm9cTGFuZ3VhZ2VcVHlwZSI6NDp7czo3OiIAKgB0eXBlIjtpOjgxOTI7czoxMjoiACoAY2xhc3NOYW1lIjtzOjA6IiI7czoxMToiACoAc3ViVHlwZXMiO2E6MTp7aTowO086MjE6IlByZXJhbm9cTGFuZ3VhZ2VcVHlwZSI6NDp7czo3OiIAKgB0eXBlIjtpOjE7czoxMjoiACoAY2xhc3NOYW1lIjtzOjA6IiI7czoxMToiACoAc3ViVHlwZXMiO2E6MDp7fXM6NToidmFsdWUiO047fX1zOjU6InZhbHVlIjtOO319fQ==';
     private static $instance;
     private $headers = null;
     public static function init()
@@ -30,16 +30,6 @@ final class __PRERANO_CODE__
         }
         return self::$Prerano܃܃Examples܃܃PublicFunctions܃܃instance;
     }
-    /** fn(int,float)int */
-    public function Prerano܃܃Examples܃܃PublicFunctions܃܃id($a, $b)
-    {
-        return $a;
-    }
-    /** fn((0|1))int */
-    public function Prerano܃܃Examples܃܃PublicFunctions܃܃decode($status)
-    {
-        return $status;
-    }
     /** fn()int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃getOne()
     {
@@ -48,41 +38,20 @@ final class __PRERANO_CODE__
     /** fn(int)int */
     public function Prerano܃܃Examples܃܃PublicFunctions܃܃inc($a)
     {
-        $_201 = $a + 1;
-        return $_201;
+        $_207 = $a + 1;
+        return $_207;
     }
     /** fn()none */
     public function __construct()
     {
-        $_206 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
-        $_208 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_206);
-        return $_208;
+        $_212 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
+        $_214 = $this->Prerano܃܃Examples܃܃PublicFunctions܃܃inc($_212);
+        return $_214;
     }
 }
 __PRERANO_CODE__::Prerano܃܃Examples܃܃PublicFunctions܃܃∫();
-function id($a, $b) : int
-{
-    if (!is_int($a)) {
-        throw new \TypeException('Function id() expects parameter 1 to be int');
-    }
-    if (!(is_float($b) || is_int($b))) {
-        throw new \TypeException('Function id() expects parameter 2 to be float');
-    }
-    $__result__ = \Prerano\Examples\PublicFunctions\__PRERANO_CODE__::Prerano܃܃Examples܃܃PublicFunctions܃܃∫()->Prerano܃܃Examples܃܃PublicFunctions܃܃id($a, $b);
-    return $__result__;
-}
-function decode($status) : int
-{
-    if (!($status === 0 || $status === 1)) {
-        throw new \TypeException('Function decode() expects parameter 1 to be (0|1)');
-    }
-    $__result__ = \Prerano\Examples\PublicFunctions\__PRERANO_CODE__::Prerano܃܃Examples܃܃PublicFunctions܃܃∫()->Prerano܃܃Examples܃܃PublicFunctions܃܃decode($status);
-    return $__result__;
-}
 function getOne() : int
 {
     $__result__ = \Prerano\Examples\PublicFunctions\__PRERANO_CODE__::Prerano܃܃Examples܃܃PublicFunctions܃܃∫()->Prerano܃܃Examples܃܃PublicFunctions܃܃getOne();
     return $__result__;
 }
-const GOOD = 0;
-const BAD = 1;

@@ -212,6 +212,7 @@ non_call_expr:
     | '$' identifier                                            { $$ = Node\Expr\Variable[$2]; }
     | scalar                                                    { $$ = $1; }
     | '[' expr_list ']'                                         { $$ = Node\Expr\Array_[$2]; }
+    | non_call_expr '=' expr                                    { $$ = Node\Expr\Assign[$1, $3]; }
 ;
 
 expr_list:

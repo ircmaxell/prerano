@@ -7,4 +7,10 @@ public enum STATUS {
     BAD
 }
 
+type numeric = int|string|float
+
 public fn decode(0|1 $status) int = $status;
+
+public fn decode2(STATUS $status) int = $status;
+
+public fn decode3(numeric $value) int = $value;
