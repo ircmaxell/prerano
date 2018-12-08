@@ -156,8 +156,11 @@ Package Prerano::Examples::PublicFunctions
         type:
           Expr_Type_Named
             name:
-              Name
+              Name_Qualified
                 parts [
+                  Prerano
+                  Examples
+                  PublicFunctions
                   STATUS
                 ]
         default()
@@ -189,8 +192,11 @@ Package Prerano::Examples::PublicFunctions
         type:
           Expr_Type_Named
             name:
-              Name
+              Name_Qualified
                 parts [
+                  Prerano
+                  Examples
+                  PublicFunctions
                   numeric
                 ]
         default()

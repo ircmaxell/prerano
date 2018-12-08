@@ -42,7 +42,7 @@ class PublicFunctions
         foreach ($function->parameters as $key => $parameter) {
             $key++;
             $results[] = PHP::if(
-                PHP::not(TypeCheck::compileExternalCheck(PHP::var($parameter->name), $parameter->getDeclaredType())),
+                PHP::not(TypeCheck::compileExternalCheck(PHP::var($parameter->name), $parameter->getInferredType())),
                 [
                     PHP::throw("\TypeException", "Function {$name}() expects parameter {$key} to be " . $parameter->getDeclaredType()->toString())
                 ]

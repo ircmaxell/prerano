@@ -17,6 +17,7 @@ class Compiler
         $this->parser = new Parser\Parser(new Parser\Lexer);
         $this->traverser = new AST\Traverser;
         $this->traverser->addVisitor(new AST\Visitor\AliasResolver);
+        $this->traverser->addVisitor(new AST\Visitor\TypeQualifier);
         $this->generator = new CFG\Generator;
         $this->compiler = new Compiler\PHP;
         $this->scope = new Scope;
